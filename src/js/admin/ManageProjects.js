@@ -1,40 +1,107 @@
 import React, { Component } from 'react';
-import projectJson from '../../data/projectData.json';
-
+import Popup from "../components/Popup";
+import { validationMessages } from '../common/Constants';
 import {statusColorClass} from '../common/Utils.js';
-
 import EditProject from './EditProject';
+
+import AdminService from "../services/admin.service";
 
 class ManageProjects extends Component {
     state = {
         searchValue: "",
-        listitems: projectJson.projects,
+        listitems: [],
         selectedItem: [],
-        editProjectPage: false
+        editProjectPage: false,
+        popupConfig: {},
+        isPopupOpen: false
+    }
+    constructor(props) {
+        super(props);
+        this.getAllProjectList();
+    }
+    getAllProjectList() {
+        AdminService.getAllProjects().then(
+            response => {
+                if(response){
+                    this.setState({
+                        listitems: response.data.projects
+                    });
+                }
+            },
+            error => {
+              console.log("Error");
+            }
+          );
     }
     handleSearchChange(e) {
         this.setState({
             searchValue: e.target.value.toLowerCase()
         });
     }
-    editProjects() {
+    handleClose = () => {
         this.setState({
-            editProjectPage: true
+            isPopupOpen: false
         });
+    };
+
+    handleModalYes = () => {
+        this.setState({
+            isPopupOpen: false
+        });
+        AdminService.deleteProject(this.state.selectedItem.id).then(
+            response => {
+                var tempList = this.state.listitems.filter(item => item.id !== this.state.selectedItem.id);
+                this.setState({
+                    listitems: tempList,
+                    selectedItem: []
+                });
+            },
+            error => {
+              console.log("Error");
+            }
+          );
+    };
+    editProjects() {
+        if (this.state.selectedItem && this.state.selectedItem.length === 0) {
+            this.setState({
+                isPopupOpen: true,
+                popupConfig : {
+                    header: "Message",
+                    body:validationMessages.NO_ITEM,
+                    type: "message"
+                }
+            });
+        } else {
+            this.setState({
+                editProjectPage: true
+            });
+        }
     }
     deleteProjects() {
-        var tempList = this.state.listitems.filter(item => item.id !== this.state.selectedItem.id);
+        /*var tempList = this.state.listitems.filter(item => item.id !== this.state.selectedItem.id);
         this.setState({
             listitems: tempList
         });
-    }
-    addProjects() {
-        this.setState({
-            selectedItem: []
-        });
-        this.setState({
-            editProjectPage: true
-        });
+        */
+        if (this.state.selectedItem && this.state.selectedItem.length === 0) {
+            this.setState({
+                isPopupOpen: true,
+                popupConfig : {
+                    header: "Message",
+                    body:validationMessages.NO_ITEM,
+                    type: "message"
+                }
+            });
+        } else {
+            this.setState({
+                isPopupOpen: true,
+                popupConfig : {
+                    header: "Confirm to Delete",
+                    body:"Are you sure you want to delete "+this.state.selectedItem.name,
+                    type: "confirmation"
+                }
+            });
+        }
     }
     onProjectSelected(selectedItem) {
         this.setState({
@@ -49,6 +116,17 @@ class ManageProjects extends Component {
             editProjectPage:false
           });
     }
+    getNumberOfDays(start, end) {
+        const date1 = new Date(start);
+        const date2 = new Date(end);
+        const oneDay = 1000 * 60 * 60 * 24;
+        const diffInTime = date2.getTime() - date1.getTime();
+        const diffInDays = Math.round(diffInTime / oneDay);
+        return diffInDays;
+    }
+    
+
+
     renderProjectList() {
         return(
             <div className="col admin-list-page" id="projects-page">
@@ -66,7 +144,6 @@ class ManageProjects extends Component {
                             </div>
                             <button className="btn delete-btn" onClick={() => this.deleteProjects()}></button>
                             <button className="btn edit-btn" onClick={() => this.editProjects()}></button>
-                            <button className="btn add-btn" onClick={() => this.addProjects()}></button>
                         </div>
                     </div>
                     <div className="quote-req-list">
@@ -78,10 +155,10 @@ class ManageProjects extends Component {
                                 <label>Description</label>
                             </div>
                             <div className="col-sm">
-                                <label>Hours Commited</label>
+                                <label>Days Commited</label>
                             </div>
                             <div className="col-sm">
-                                <label>Hours Left</label>
+                                <label>Days Left</label>
                             </div>
 
                             <div className="col-sm">
@@ -99,7 +176,7 @@ class ManageProjects extends Component {
                         <div className="quote-req-table">
 
                             {this.state.listitems.filter(item =>
-                                item.p_name.toLowerCase().includes(this.state.searchValue)).map(listitem => (
+                                item.name.toLowerCase().includes(this.state.searchValue)).map(listitem => (
 
                                     <div className="row mt-1" key={listitem.id}>
                                         <div className="col-sm" >
@@ -107,27 +184,28 @@ class ManageProjects extends Component {
                                                 <input type="radio" className="toggle"
                                                     name="projectItem" value={listitem.id}
                                                     onChange={() => this.onProjectSelected(listitem)} />
-                                                {listitem.p_name}
+                                                {listitem.name}
                                             </label>
                                             
                                         </div>
                                         <div className="col-sm" >
-                                            <label className="description-truncate text-truncate">{listitem.p_desc}</label>
+                                            <label className="description-truncate text-truncate">{listitem.desc}</label>
                                         </div>
                                         <div className="col-sm" >
-                                            <label>{listitem.hours_commited}</label>
+                                            <label>{this.getNumberOfDays(listitem.start_date,listitem.end_date)}</label>
                                         </div>
                                         <div className="col-sm" >
-                                            <label>{listitem.hours_left}</label>
+                                            {(new Date(listitem.start_date) < new Date()) ? (<label>{this.getNumberOfDays(new Date(),listitem.end_date)}</label>) : <label>{this.getNumberOfDays(listitem.start_date,listitem.end_date)}</label>}
+                                            
                                         </div>
                                         <div className="col-sm" >
-                                            <label>{listitem.start_date}</label>
+                                            <label>{(new Date(listitem.start_date)).toLocaleDateString() }</label>
                                         </div>
                                         <div className="col-sm" >
-                                            <label>{listitem.end_date}</label>
+                                            <label>{(new Date(listitem.end_date)).toLocaleDateString() }</label>
                                         </div>
                                         <div className="col-sm" >
-                                            <label className = {"badge " + statusColorClass(listitem.p_status)} >{listitem.p_status}</label>
+                                            <label className = {"badge " + statusColorClass(listitem.status)} >{listitem.status}</label>
                                         </div>
                                     </div>
                                 ))}
@@ -139,6 +217,7 @@ class ManageProjects extends Component {
     render() {
         return (
             <React.Fragment>
+                <Popup popupConfig = {this.state.popupConfig} openFlag = {this.state.isPopupOpen} parentCloseCallback={this.handleClose.bind(this)} parentConfirmCallback = {this.handleModalYes.bind(this)}></Popup>
                 {this.state.editProjectPage ? <EditProject selectedItem={this.state.selectedItem} parentCallback= {this.parentCallback}/> : this.renderProjectList()}
             </React.Fragment>
         );

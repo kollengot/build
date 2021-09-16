@@ -1,38 +1,114 @@
 import React, { Component } from 'react';
-import CustomerJson from '../../data/customerData.json';
-
+import Popup from "../components/Popup";
+import { validationMessages } from '../common/Constants';
 import EditCustomer from './EditCustomer';
+import AdminService from "../services/admin.service";
+
 
 class ManageCustomer extends Component {
     state = {
         searchValue: "",
-        listitems: CustomerJson.rows,
+        listitems: [],
         selectedItem: [],
-        editCustomerPage: false
+        editCustomerPage: false,
+        popupConfig: {},
+        isPopupOpen: false
+    }
+    constructor(props) {
+        super(props);
+        this.getAllCustomerList();
+    }
+    getAllCustomerList() {
+        AdminService.getAllCustomers().then(
+            response => {
+                if(response){
+                    this.setState({
+                        listitems: response.data.rows
+                    });
+                }
+            },
+            error => {
+              console.log("Error");
+            }
+          );
     }
     handleSearchChange(e) {
         this.setState({
             searchValue: e.target.value.toLowerCase()
         });
     }
-    editCustomer() {
+    handleClose = () => {
         this.setState({
-            editCustomerPage: true
+            isPopupOpen: false
         });
     }
-    addCustomer() {
+
+    handleModalYes = () => {
+        this.setState({
+            isPopupOpen: false
+        });
+
+        AdminService.deleteCustomer(this.state.selectedItem.id).then(
+            response => {
+                var tempList = this.state.listitems.filter(item => item.id !== this.state.selectedItem.id);
+                this.setState({
+                    listitems: tempList,
+                    selectedItem: []
+                });
+            },
+            error => {
+              console.log("Error");
+            }
+          );
+
+    }
+
+    editCustomer() {
+        if (this.state.selectedItem && this.state.selectedItem.length === 0) {
+            this.setState({
+                isPopupOpen: true,
+                popupConfig : {
+                    header: "Message",
+                    body:validationMessages.NO_ITEM,
+                    type: "message"
+                }
+            });
+        } else {
+            this.setState({
+                editCustomerPage: true
+            });
+        }
+    }
+
+    /*addCustomer() {
         this.setState({
             selectedItem: []
         });
         this.setState({
             editCustomerPage: true
         });
-    }
+    }*/
+    
     deleteCustomer() {
-        var tempList = this.state.listitems.filter(item => item.id !== this.state.selectedItem.id);
-        this.setState({
-            listitems: tempList
-        });
+        if (this.state.selectedItem && this.state.selectedItem.length === 0) {
+            this.setState({
+                isPopupOpen: true,
+                popupConfig : {
+                    header: "Message",
+                    body:validationMessages.NO_ITEM,
+                    type: "message"
+                }
+            });
+        } else {
+            this.setState({
+                isPopupOpen: true,
+                popupConfig : {
+                    header: "Confirm to Delete",
+                    body:"Are you sure you want to delete "+this.state.selectedItem.name,
+                    type: "confirmation"
+                }
+            });
+        }
     }
     onCustomerSelected(selectedItem) {
         this.setState({
@@ -58,7 +134,6 @@ class ManageCustomer extends Component {
                     </div>
                     <button className="btn delete-btn" onClick={() => this.deleteCustomer()}></button>
                     <button className="btn edit-btn" onClick={() => this.editCustomer()}></button>
-                    <button className="btn add-btn" onClick={() => this.addCustomer()}></button>
                 </div>
             </div>
             <div className="quote-req-list">
@@ -81,7 +156,7 @@ class ManageCustomer extends Component {
                 </div>
                 <div className="quote-req-table">
                     {this.state.listitems.filter(item =>
-                        item.c_name.toLowerCase().includes(this.state.searchValue)).map(listitem => (
+                        item.name.toLowerCase().includes(this.state.searchValue)).map(listitem => (
 
 
                             <div className="row mt-1" key={listitem.id}>
@@ -92,25 +167,25 @@ class ManageCustomer extends Component {
                                         <input type="radio" className="toggle"
                                             name="quoteItem" value={listitem.id}
                                             onChange={() => this.onCustomerSelected(listitem)} />
-                                        {listitem.c_name}
+                                        {listitem.name}
                                     </label>
 
                                 </div>
 
                                 <div className="col-sm" >
-                                    <label className="description-truncate text-truncate">{listitem.c_phone}</label>
+                                    <label className="description-truncate text-truncate">{listitem.phone}</label>
                                 </div>
 
                                 <div className="col-sm" >
-                                    <label>{listitem.c_address}</label>
+                                    <label>{listitem.address}</label>
                                 </div>
 
                                 <div className="col-sm" >
-                                    <label>{listitem.c_email}</label>
+                                    <label>{listitem.email}</label>
                                 </div>
                                 
                                 <div className="col-sm" >
-                                    <label>{listitem.no_of_req}</label>
+                                    <label>{listitem.Quotes}</label>
                                 </div>
 
                             </div>
@@ -122,6 +197,7 @@ class ManageCustomer extends Component {
     render() {
         return (
             <React.Fragment>
+                <Popup popupConfig = {this.state.popupConfig} openFlag = {this.state.isPopupOpen} parentCloseCallback={this.handleClose.bind(this)} parentConfirmCallback = {this.handleModalYes.bind(this)}></Popup>
                 {this.state.editCustomerPage ? <EditCustomer selectedItem={this.state.selectedItem} parentCallback={this.parentCallback} /> : this.renderCustomerList()}
             </React.Fragment>
         );

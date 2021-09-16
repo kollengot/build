@@ -1,123 +1,41 @@
 import React, { Component } from 'react';
+import UserService from "../services/user.service";
 
 class QuoteList extends Component {
     constructor(props) {
         super(props);
         this.handleChange = this.handleChange.bind(this);
+        this.getAllQuotes();
     }
+    
+
     state = {
-        activeId : 0
+        activeId : 0,
+        searchValue: "",
+        listitems: []
+
     }
+
     selectQuote(item) {
         this.props.parentCallback(item);
         this.setState({
             activeId:item.id
           });
     }
-    state = {
-        searchValue: "",
-        listitems: [
-            {
-                id: 0,
-                title: "Quote Req1 - Custom Tools 1.2.5",
-                content: "Lorem Ipsum is simply dummy text of the printing and typesetting industry.",
-                tools: ["Tool01 - 32mm 100", "Tool01 - 32mm 100", "Tool01 - 32mm 100", "Tool01 - 32mm 100"],
-                createdOn: "1/10/2020",
-                modifiedOn: "12/10/2020",
-                status: "PO Submitted",
-                attachments: ["url1", "url2"],
-                measurements: [{
-                    "data0": [{
-                        "name": "Item Name",
-                        "type": "text",
-                        "value": "333"
-                    }, {
-                        "name": "Unit",
-                        "type": "text",
-                        "value": "444"
-                    },
-                    {
-                        "name": "Quantity ",
-                        "type": "text",
-                        "value": "fdsfs"
-                    }
-                    ]
-                }, {
-                    "data1": [{
-                        "name": "Item Name",
-                        "type": "text",
-                        "value": "wqwewqe"
-                    }, {
-                        "name": "Unit",
-                        "type": "text",
-                        "value": "333"
-                    },
-                    {
-                        "name": "Quantity ",
-                        "type": "text",
-                        "value": "2222"
-                    }
-                    ]
-                }]
 
+    getAllQuotes() {
+        UserService.getAllQuotes().then(
+            response => {
+                this.setState({
+                    listitems: response.data.rows
+                });
             },
-            {
-                id: 1,
-                title: "Quote Req2 - Custom Tools 1.2.5",
-                content: "Lorem Ipsum is simply dummy text of the printing and typesetting industry.Lorem Ipsum is simply dummy text of the printing and typesetting industry.Lorem Ipsum is simply dummy text of the printing and typesetting industry.Lorem Ipsum is simply dummy text of the printing and typesetting industry.",
-                tools: ["Tool01 - 32mm 100", "Tool01 - 32mm 100", "Tool01 - 32mm 100", "Tool01 - 32mm 100"],
-                createdOn: "5/10/2020",
-                modifiedOn: "25/10/2020",
-                status: "Work in progress",
-                attachments: ["url1", "url2", "url3"],
-                measurements: []
-            },
-            {
-                id: 2,
-                title: "Quote Req2 - Custom Tools 1.2.5",
-                content: "Lorem Ipsum is simply dummy text of the printing and typesetting industry.Lorem Ipsum is simply dummy text of the printing and typesetting industry.Lorem Ipsum is simply dummy text of the printing and typesetting industry.Lorem Ipsum is simply dummy text of the printing and typesetting industry.",
-                tools: ["Tool01 - 32mm 100", "Tool01 - 32mm 100", "Tool01 - 32mm 100", "Tool01 - 32mm 100"],
-                createdOn: "1/10/2020",
-                modifiedOn: "1/10/2020",
-                status: "Work in progress",
-                attachments: ["url1", "url2", "url3"],
-                measurements: []
-            },
-            {
-                id: 3,
-                title: "Quote Req2 - Custom Tools 1.2.5",
-                content: "Lorem Ipsum is simply dummy text of the printing and typesetting industry.Lorem Ipsum is simply dummy text of the printing and typesetting industry.Lorem Ipsum is simply dummy text of the printing and typesetting industry.Lorem Ipsum is simply dummy text of the printing and typesetting industry.",
-                tools: ["Tool01 - 32mm 100", "Tool01 - 32mm 100", "Tool01 - 32mm 100", "Tool01 - 32mm 100"],
-                createdOn: "11/10/2020",
-                modifiedOn: "20/10/2020",
-                status: "Work in progress",
-                attachments: ["url1", "url2", "url3"],
-                measurements: []
-            }, {
-                id: 4,
-                title: "Quote Req2 - Custom Tools 1.2.5",
-                content: "Lorem Ipsum is simply dummy text of the printing and typesetting industry.Lorem Ipsum is simply dummy text of the printing and typesetting industry.Lorem Ipsum is simply dummy text of the printing and typesetting industry.Lorem Ipsum is simply dummy text of the printing and typesetting industry.",
-                tools: ["Tool01 - 32mm 100", "Tool01 - 32mm 100", "Tool01 - 32mm 100", "Tool01 - 32mm 100"],
-                createdOn: "Dec 9",
-                modifiedOn: "Dec 20",
-                status: "Work in progress",
-                attachments: ["url1", "url2", "url3"],
-                measurements: []
-            },
-            {
-                id: 5,
-                title: "Quote Req2 - Custom Tools 1.2.5",
-                content: "Lorem Ipsum is simply dummy text of the printing and typesetting industry.Lorem Ipsum is simply dummy text of the printing and typesetting industry.Lorem Ipsum is simply dummy text of the printing and typesetting industry.Lorem Ipsum is simply dummy text of the printing and typesetting industry.",
-                tools: ["Tool01 - 32mm 100", "Tool01 - 32mm 100", "Tool01 - 32mm 100", "Tool01 - 32mm 100"],
-                createdOn: "Dec 9",
-                modifiedOn: "Dec 20",
-                status: "Work in progress",
-                attachments: ["url1", "url2", "url3"],
-                measurements: []
+            error => {
+                console.log("Error");
             }
-        ]
-
+        );
     }
+
 
     handleChange(e) {
         this.setState({
@@ -144,7 +62,7 @@ class QuoteList extends Component {
 
                 <div className="list-group">
 
-                    {this.state.listitems.filter(item =>
+                    {this.state.listitems && this.state.listitems.filter(item =>
                         item.title.toLowerCase().includes(this.state.searchValue)).map(listitem => (
 
                             <a className={
@@ -155,25 +73,25 @@ class QuoteList extends Component {
                                     <h5 className="mb-1 underline half">{listitem.title}</h5>
 
                                 </div>
-                                <p className="mb-1 ellipses_two">{listitem.content}</p>
+                                <p className="mb-1 ellipses_two">{listitem.desc}</p>
                                 <div>
-                                    {listitem.tools.map(tool => (
+                                    {listitem.tools && listitem.tools.map(tool => (
                                         <span className="badge tool-badge">{tool}</span>
                                     )
                                     )}
                                 </div>
                                 <div className="row list-item-detail">
                                     <div className="col-2 calender-icon">
-                                        <small>{listitem.createdOn}</small>
+                                        <small>{(new Date(listitem.createdAt)).toLocaleDateString()}</small>
                                     </div>
                                     <div className="col-5 flag-icon">
                                         <small>{listitem.status}</small>
-                                        <span className="date-badge badge">{listitem.modifiedOn}</span>
+                                        <span className="date-badge badge">{(new Date(listitem.updatedAt)).toLocaleDateString()}</span>
                                     </div>
 
                                     <div className="col-3 attachment-icon">
-                                        <small>{listitem.attachments.length}</small>
-                                        <small>Attachments</small>
+                                        <small>{listitem.Uploads}</small>
+                                        <small> Attachments</small>
                                     </div>
                                     <div className="col-2 rightarrow-icon">
                                         <small>View details</small>

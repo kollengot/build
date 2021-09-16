@@ -11,7 +11,7 @@
             "UserId": 2,
             "tools": ["Tool01 - 32mm 100", "Tool01 - 32mm 100", "Tool01 - 32mm 100", "Tool01 - 32mm 100"],
             "receivedOn": "1/10/2020",
-            "attachments": ["url1", "url2"]
+            "attachments": []
         },
         {
             "id": 2,
@@ -23,7 +23,7 @@
             "UserId": 2,
             "tools": ["Tool01 - 32mm 100", "Tool01 - 32mm 100", "Tool01 - 32mm 100", "Tool01 - 32mm 100"],
             "receivedOn": "1/10/2020",
-            "attachments": ["url1", "url2"]
+            "attachments": []
         },
         {
             "id": 3,
@@ -35,7 +35,7 @@
             "UserId": 2,
             "tools": ["Tool01 - 32mm 100", "Tool01 - 32mm 100", "Tool01 - 32mm 100", "Tool01 - 32mm 100"],
             "receivedOn": "1/10/2020",
-            "attachments": ["url1", "url2"]
+            "attachments": []
         }
     ],
     "totalPages": 3,

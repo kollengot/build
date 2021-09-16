@@ -1,53 +1,24 @@
 {"operationsList": [
     {
         "id": 0,
-        "projectName": "Quote Req1 - Custom Tools 1.2.5",
-        "description": "Lorem Ipsum is simply dummy text of the printing and typesetting industry.",
-        "startDate": "12/10/2020",
-        "endDate": "12/23/2020",
+        "o_name": "Operation1: Drilling",
+        "o_desc": "Lorem Ipsum is simply dummy text of the printing and typesetting industry.",
+        "createdAt": "12/10/2020",
+        "updatedAt": "12/23/2020",
         "hoursCommited": 230,
         "hoursLeft": 120,
         "status": "In Progress"
     },
     {
         "id": 1,
-        "projectName": "Quote Req2 - Custom Tools 1.2.5",
-        "description": "Lorem Ipsum is simply dummy text of the printing and typesetting industry.",
-        "startDate": "12/10/2020",
-        "endDate": "12/23/2020",
-        "hoursCommited": 230,
-        "hoursLeft": 120,
-        "status": "In Progress"
-    },
-    {
-        "id": 2,
-        "projectName": "Quote Req3 - Custom Tools 1.2.5",
-        "description": "Lorem Ipsum is simply dummy text of the printing and typesetting industry.",
-        "startDate": "12/10/2020",
-        "endDate": "12/23/2020",
-        "hoursCommited": 230,
-        "hoursLeft": 120,
-        "status": "In Progress"
-    },
-    {
-        "id": 3,
-        "projectName": "Quote Req1 - Custom Tools 1.2.5",
-        "description": "Lorem Ipsum is simply dummy text of the printing and typesetting industry.",
-        "startDate": "12/10/2020",
-        "endDate": "12/23/2020",
-        "hoursCommited": 230,
-        "hoursLeft": 120,
-        "status": "In Progress"
-    },
-    {
-        "id": 4,
-        "projectName": "Quote Req1 - Custom Tools 1.2.5",
-        "description": "Lorem Ipsum is simply dummy text of the printing and typesetting industry.",
-        "startDate": "12/10/2020",
-        "endDate": "12/23/2020",
+        "o_name": "Operation2: Drilling",
+        "o_desc": "Lorem Ipsum is simply dummy text of the printing and typesetting industry.",
+        "createdAt": "12/10/2020",
+        "updatedAt": "12/23/2020",
         "hoursCommited": 230,
         "hoursLeft": 120,
         "status": "In Progress"
     }
 ]
 }
+

@@ -12,11 +12,15 @@
             "createdAt": "2021-04-05T08:52:42.000Z",
             "updatedAt": "2021-04-05T08:52:42.000Z",
             "OperationId": 1,
-            "ProjectId": 1
+            "ProjectId": 1,
+            "profession": "Painting",
+            "availability": 200,
+            "availbilty_per_day": 30,
+            "cost_per_day": 2000
         },
         {
             "id": 7,
-            "w_name": "subinn",
+            "w_name": "Sam",
             "w_phone": "12345678765",
             "w_address":  "123 street",
             "w_email": "subin@gmail.com",
@@ -25,7 +29,11 @@
             "createdAt": "2021-04-05T08:53:11.000Z",
             "updatedAt": "2021-04-05T08:53:11.000Z",
             "OperationId": 1,
-            "ProjectId": 1
+            "ProjectId": 1,
+            "profession": "Engineer",
+            "availability": 200,
+            "availbilty_per_day": 30,
+            "cost_per_day": 2000
         },
         {
             "id": 8,
@@ -38,7 +46,11 @@
             "createdAt": "2021-04-05T08:53:11.000Z",
             "updatedAt": "2021-04-05T08:53:11.000Z",
             "OperationId": 1,
-            "ProjectId": 1
+            "ProjectId": 1,
+            "profession": "Carpenter",
+            "availability": 200,
+            "availbilty_per_day": 30,
+            "cost_per_day": 2000
         }
     ]
 }

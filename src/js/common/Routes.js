@@ -3,6 +3,7 @@ import React, { Component } from 'react';
 import Login from '../user/Login';
 import Dashboard from '../user/Dashboard';
 import AdminDashboard from "../admin/AdminDashboard";
+import WorkerDashboard from "../worker/WorkerDashboard";
 
 import { BrowserRouter as Router, Switch, Route } from 'react-router-dom';
 
@@ -20,6 +21,9 @@ class Routes extends Component {
                         </Switch>
                         <Switch>
                             <Route path='/AdminDashboard' component={AdminDashboard} />
+                        </Switch>
+                        <Switch>
+                            <Route path='/WorkerDashboard' component={WorkerDashboard} />
                         </Switch>
                     </div>
                 </Router>

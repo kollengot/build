@@ -3,11 +3,15 @@
     "inspectionsList": [
         {
             "id": 1,
-            "item_name": "Standard"
+            "item_name": "Standard",
+            "desc": "Lorem ipsum dolor sit amet",
+            "inspection_cost": 20
         },
         {
             "id": 2,
-            "item_name": "Normal"
+            "item_name": "Normal",
+            "desc": "Lorem ipsum dolor sit amet",
+            "inspection_cost": 10
         }
     ],
     "totalPages": 1,

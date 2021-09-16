@@ -1,30 +1,98 @@
 import React, { Component } from 'react';
-import operationsJson from '../../data/operationsData.json';
-
+import Popup from "../components/Popup";
+import { validationMessages } from '../common/Constants';
 import EditOperations from './EditOperations';
+import AdminService from "../services/admin.service";
 
 class ManageOperations extends Component {
     state = {
         searchValue: "",
-        listitems: operationsJson.operationsList,
+        listitems: [],
         selectedItem: [],
-        editOperationPage: false
+        editOperationPage: false,
+        popupConfig: {},
+        isPopupOpen: false
+    }
+    constructor(props) {
+        super(props);
+        this.getAllOperationList();
+    }
+    getAllOperationList() {
+        AdminService.getAllOperations().then(
+            response => {
+                this.setState({
+                    listitems: response.data.rows
+                });
+            },
+            error => {
+              console.log("Error");
+            }
+          );
     }
     handleSearchChange(e) {
         this.setState({
             searchValue: e.target.value.toLowerCase()
         });
     }
-    editOperations() {
+    handleClose = () => {
         this.setState({
-            editOperationPage: true
+            isPopupOpen: false
         });
+    };
+
+    handleModalYes = () => {
+        this.setState({
+            isPopupOpen: false
+        });
+        AdminService.deleteOperation(this.state.selectedItem.id).then(
+            response => {
+                var tempList = this.state.listitems.filter(item => item.id !== this.state.selectedItem.id);
+                this.setState({
+                    listitems: tempList,
+                    selectedItem: []
+                });
+            },
+            error => {
+              console.log("Error");
+            }
+          );
+    };
+    editOperations() {
+        if (this.state.selectedItem && this.state.selectedItem.length === 0) {
+            this.setState({
+                isPopupOpen: true,
+                popupConfig : {
+                    header: "Message",
+                    body:validationMessages.NO_ITEM,
+                    type: "message"
+                }
+            });
+        } else {
+            this.setState({
+                editOperationPage: true
+            });
+        }
     }
     deleteOperations() {
-        var tempList = this.state.listitems.filter(item => item.id !== this.state.selectedItem.id);
-        this.setState({
-            listitems: tempList
-        });
+        if (this.state.selectedItem && this.state.selectedItem.length === 0) {
+            this.setState({
+                isPopupOpen: true,
+                popupConfig : {
+                    header: "Message",
+                    body:validationMessages.NO_ITEM,
+                    type: "message"
+                }
+            });
+        } else {
+            this.setState({
+                isPopupOpen: true,
+                popupConfig : {
+                    header: "Confirm to Delete",
+                    body:"Are you sure you want to delete "+this.state.selectedItem.name,
+                    type: "confirmation"
+                }
+            });
+        }
     }
     addOperations() {
         this.setState({
@@ -60,7 +128,7 @@ class ManageOperations extends Component {
                         <div className="col-8 text-right">
                             <div className="has-search">
                                 <span className="fa fa-search form-control-feedback"></span>
-                                <input type="text" className="form-control search-box" placeholder="Search quote requests..." onChange={this.handleSearchChange.bind(this)} />
+                                <input type="text" className="form-control search-box" placeholder="Search operations..." onChange={this.handleSearchChange.bind(this)} />
                             </div>
                             <button className="btn delete-btn" onClick={() => this.deleteOperations()}></button>
                             <button className="btn edit-btn" onClick={() => this.editOperations()}></button>
@@ -70,31 +138,26 @@ class ManageOperations extends Component {
                     <div className="quote-req-list">
                         <div className="row mt-1 quote-req-header">
                             <div className="col-sm">
-                                <label>Project Name</label>
+                                <label>Operation Name</label>
                             </div>
                             <div className="col-sm">
                                 <label>Description</label>
                             </div>
                             <div className="col-sm">
-                                <label>Start Date</label>
+                                <label>Tools & Materials Required </label>
                             </div>
                             <div className="col-sm">
-                                <label>End Date</label>
+                                <label>Created On</label>
                             </div>
                             <div className="col-sm">
-                                <label>Hours Commited</label>
+                                <label>Modified On</label>
                             </div>
-                            <div className="col-sm">
-                                <label>Hours Left</label>
-                            </div>
-                            <div className="col-sm">
-                                <label>Status</label>
-                            </div>
+                            
                         </div>
                         <div className="quote-req-table">
 
-                            {this.state.listitems.filter(item =>
-                                item.projectName.toLowerCase().includes(this.state.searchValue)).map(listitem => (
+                           {this.state.listitems && this.state.listitems.filter(item =>
+                                item.name.toLowerCase().includes(this.state.searchValue)).map(listitem => (
 
                                     <div className="row mt-1" key={listitem.id}>
                                         <div className="col-sm" >
@@ -102,28 +165,29 @@ class ManageOperations extends Component {
                                                 <input type="radio" className="toggle"
                                                     name="operationItem" value={listitem.id}
                                                     onChange={() => this.onOperationSelected(listitem)} />
-                                                {listitem.projectName}
+                                                {listitem.name}
                                             </label>
                                             
                                         </div>
                                         <div className="col-sm" >
-                                            <label className="description-truncate text-truncate">{listitem.description}</label>
+                                            <label className="description-truncate text-truncate">{listitem.desc}</label>
                                         </div>
                                         <div className="col-sm" >
-                                            <label>{listitem.startDate}</label>
+                                        
+                                            
+                                            <label className="description-truncate text-truncate">
+                                            <span className="badge date-badge mr-2">{listitem.toolsRequired.length}</span>
+                                                {listitem.toolsRequired.toString()}
+                                            </label>
+                                            
                                         </div>
                                         <div className="col-sm" >
-                                            <label>{listitem.endDate}</label>
+                                            <label>{(new Date(listitem.createdAt)).toLocaleDateString()}</label>
                                         </div>
                                         <div className="col-sm" >
-                                            <label>{listitem.hoursCommited}</label>
+                                            <label>{(new Date(listitem.updatedAt)).toLocaleDateString()}</label>
                                         </div>
-                                        <div className="col-sm" >
-                                            <label>{listitem.hoursLeft}</label>
-                                        </div>
-                                        <div className="col-sm" >
-                                            <label>{listitem.status}</label>
-                                        </div>
+                                        
                                     </div>
                                 ))}
                         </div>
@@ -134,7 +198,8 @@ class ManageOperations extends Component {
     render() {
         return (
             <React.Fragment>
-                {this.state.editOperationPage ? <EditOperations selectedItem={this.state.selectedItem} parentCallback= {this.parentCallback}/> : this.renderOperationsList()}
+                <Popup popupConfig = {this.state.popupConfig} openFlag = {this.state.isPopupOpen} parentCloseCallback={this.handleClose.bind(this)} parentConfirmCallback = {this.handleModalYes.bind(this)}></Popup>
+                {this.state.editOperationPage ? <EditOperations selectedId={this.state.selectedItem.id} parentCallback= {this.parentCallback}/> : this.renderOperationsList()}
             </React.Fragment>
         );
     }

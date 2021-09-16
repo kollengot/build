@@ -1,9 +1,9 @@
-
-
-
 /******************** Page Starts Here ********************************/
-html, body, #root, #root>div {
-  height: 100%
+html,
+body,
+#root,
+#root > div {
+  height: 100%;
 }
 #root {
   background-color: aliceblue;
@@ -15,19 +15,420 @@ html, body, #root, #root>div {
 .page-body {
   overflow: auto;
   height: 88%;
+  -ms-overflow-style: none; /* IE and Edge */
+  scrollbar-width: none; /* Firefox */
 }
-
-/* Hide scrollbar for Chrome, Safari and Opera */
 .page-body::-webkit-scrollbar {
-    display: none;
+  display: none;
+}
+/******************** Page Ends Here ********************************/
+
+/***************** Login Starts here ********************************/
+.login-div {
+  position: relative;
+  top: 20%;
+}
+/***************** Login Ends here ********************************/
+
+/***************** Sidebar Starts here *****************************/
+
+.sidebar-div {
+  background-color: #cde9ef;
+  border-radius: 4px;
+  height: fit-content;
+  li.nav-item {
+    margin: 0 10px;
+    padding: 5px 0;
+    &.active_item p.nav-link {
+      background-color: #02464f;
+      border-radius: 3px;
+      color: #fcfcfc;
+    }
+    p.nav-link {
+      height: 100%;
+      padding-left: 35px;
+      margin-bottom: 0;
+      color: #000;
+      cursor: pointer;
+    }
+    p.nav-link:hover {
+      background-color: #02464f;
+      border-radius: 3px;
+      color: #fcfcfc;
+    }
+
+    &.nav-quote-req p {
+      background: url("../images/quote.png") no-repeat 5px; 
+      background-size: 25px;
+    }
+    &.nav-workers p {
+      background: url("../images/worker.png") no-repeat 5px; 
+      background-size: 25px;
+    }
+    &.nav-customer p {
+      background: url("../images/customer.png") no-repeat 5px; 
+      background-size: 25px;
+    }
+    &.nav-inspection p {
+      background: url("../images/test.png") no-repeat 5px; 
+      background-size: 25px;
+    }
+    &.nav-projects p {
+      background: url("../images/projects.png") no-repeat 5px; 
+      background-size: 25px;
+    }
+    &.nav-operations p {
+      background: url("../images/operations.png") no-repeat 5px; 
+      background-size: 25px;
+    }
+    &.nav-inventory p {
+      background: url("../images/inventory.png") no-repeat 5px; 
+      background-size: 25px;
+    }
+    &.nav-schedule p {
+      background: url("../images/schedule.png") no-repeat 5px; 
+      background-size: 25px;
+    }
+  }
 }
 
-/* Hide scrollbar for IE, Edge and Firefox */
-.page-body {
-  -ms-overflow-style: none;  /* IE and Edge */
-  scrollbar-width: none;  /* Firefox */
+/***************** Sidebar Ends here *****************************/
+
+.section-header {
+  color: #22b2c8;
 }
-.search-box{
+.blue-color {
+  color: #067bc4;
+}
+.green-text-color {
+  color: #528792;
+}
+.green-text-color2 {
+  color: #084852;
+}
+.list-group-item {
+  background-color: #2fd0df;
+  border: 4px solid #2fd0df;
+  margin: 5px 0;
+  border-radius: 5px;
+}
+.list-group-item:focus,
+.list-group-item:hover {
+  border: 4px solid white;
+  background-color: #2fd0df;
+}
+.list-group-item + .list-group-item {
+  border-top-width: 4px;
+}
+.list-group-item.active {
+  border: 4px solid white;
+  background-color: #2fd0df;
+  color: #495057;
+  border-top-width: 4px;
+}
+.list-group-item + .list-group-item.active {
+  margin: 5px 0;
+  border-top-width: 4px;
+}
+
+/***************** Header Starts here *********************************/
+.page-header {
+  padding: 10px 0;
+  color: #bcd1cf;
+}
+.logo-header {
+  height: 40px;
+}
+/***************** Header Ends here ********************************/
+
+.tool-badge {
+  color: #5ca5b9;
+  background-color: #cbf3f7;
+  padding: 10px;
+  margin: 0 10px 5px 0;
+  font-weight: 400;
+}
+.date-badge {
+  background-color: #034754;
+  color: #fff;
+  margin: 0 0 0 5px;
+  padding: 4px;
+  font-weight: 100;
+}
+.badge {
+  &.new {
+    background-color: #f4afbf;
+  }
+  &.inProgress {
+    background-color: #0dcf17;
+    color: #fcfcfc;
+  }
+  &.qtReceived {
+    background-color: #fed35b;
+  }
+  &.qtAccepted {
+    background-color: #5bbdfe;
+  }
+  &.submitted {
+    background-color: #72c9e3;
+  }
+  &.rejected {
+    background-color: #c40404;
+  }
+  &.projectInProgress {
+    background-color: #04631b;
+    color: #fff;
+  }
+  &.adminRejected {
+    background-color: #750505;
+  }
+
+  &.closed {
+    background-color: #c1c1c1;
+  }
+}
+
+.list-item-detail {
+  margin-right: 0;
+  margin-left: 0;
+}
+.list-item-detail div {
+  padding: 0 0 0 25px;
+  &.rightarrow-icon {
+    padding: 0 25px 0 0;
+    text-align: right;
+  }
+}
+.admin-quote-page,
+.edit-inventory,
+.edit-worker,
+.edit-customer {
+  margin-left: 15px;
+  .quote-data-div p {
+    font-size: 14px;
+    font-weight: 200;
+  }
+}
+
+p.ellipses_two {
+  display: -webkit-box;
+  max-width: 100%;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.underline {
+  font-weight: 300;
+  display: inline-block;
+  padding-bottom: 5px;
+  position: relative;
+}
+.underline:before {
+  content: "";
+  position: absolute;
+  width: 100%;
+  height: 1px;
+  bottom: 0;
+  left: 2px;
+  border-bottom: 1px solid #fff;
+}
+.underline.blue:before {
+  border-color: #51afea;
+}
+.half:before {
+  width: 35%;
+}
+[data-letters]::after {
+  content: attr(data-letters);
+  display: inline-block;
+  font-size: 1em;
+  width: 2.5em;
+  height: 2.5em;
+  line-height: 2.5em;
+  text-align: center;
+  border-radius: 50%;
+  background: #009cda;
+  vertical-align: middle;
+  margin: 0 0 0 5px;
+  color: #92daf0;
+}
+
+.footer-div {
+  color: #127479;
+  text-align: center;
+  padding: 20px;
+  position: fixed;
+  left: 0px;
+  bottom: 0px;
+  height: 50px;
+  width: 100%;
+}
+
+.modal-body {
+  .admin-list-page {
+    .quote-req-list {
+      color: #000;
+    }
+  }
+}
+
+.admin-list-page {
+  .quote-req-list {
+    color: #fff;
+    font-size: 14px;
+    margin: 10px 0 0 0;
+    .quote-req-table {
+      background: #cde9ef;
+      padding: 15px;
+      border-radius: 5px;
+      color: #666;
+      input[type="checkbox"] {
+        margin: 0 5px 0 0;
+      }
+    }
+    .quote-req-table .row::after {
+      content: "";
+      background: #f7f6f6;
+      position: relative;
+      bottom: 0px;
+      height: 1px;
+      width: 98%;
+      margin-left: 1%;
+      margin-bottom: 5px;
+    }
+  }
+  .inspection-btngrp {
+    height: 40px;
+  }
+  .tax-div {
+    position: absolute;
+    margin-top: 42px;
+  }
+
+  .quote-req-table .row:last-of-type::after {
+    content: "";
+    background: #666;
+    position: relative;
+    bottom: 0px;
+    height: 0px;
+    margin-bottom: 0;
+  }
+  .add-btn,
+  .edit-btn,
+  .delete-btn {
+    height: 100%;
+    width: 45px;
+    position: relative;
+    top: -2px;
+    background-color: #c9cbcb;
+    margin: 0 5px 0 0;
+  }
+
+  .add-btn:hover,
+  .edit-btn:hover,
+  .delete-btn:hover {
+    background-color:#ffffff;
+  }
+
+  .has-search {
+    display: inline-block;
+    width: 50%;
+    margin: 0 15px 0 0;
+  }
+  .description-truncate {
+    max-width: 190px;
+  }
+  .projectname-truncate {
+    font-weight: 400;
+    font-size: 14px;
+    max-width: 65%;
+    input[type="radio"] {
+      margin: 0 5px 0 0;
+    }
+  }
+
+  .attachment-badge {
+    background-image: url("../images/attachment.png");
+    background-repeat: no-repeat;
+    background-size: 20px;
+    height: 19px;
+    width: 30px;
+    text-align: right;
+    color: #e8eef1;
+    font-size: 12px;
+    background-color: #a8c0cb;
+  }
+}
+/***************** Admin Inventory starts here *****************************/
+.operation-div {
+  max-width: 17%;
+  .operation-text-truncate {
+    max-width: 75%;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+}
+/***************** Admin Inventory ends here *****************************/
+.quote-measurements {
+  .table {
+    margin-bottom: 0;
+  }
+  .table tr td,
+  .table th {
+    border-top: 0;
+  }
+  .table tbody tr td {
+    padding: 0.75rem;
+    border-top: 1px solid #dee2e6;
+  }
+  .delete-btn {
+    background-color: transparent;
+  }
+}
+.measurements-header {
+  background: none;
+  border: 0;
+}
+/***************** Popup starts here *****************************/
+.popup {
+  position: fixed;
+  width: 100%;
+  height: 100%;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  margin: auto;
+  background-color: rgba(0, 0, 0, 0.5);
+}
+.popup_inner {
+  position: absolute;
+  left: 25%;
+  right: 25%;
+  top: 25%;
+  bottom: 25%;
+  margin: auto;
+  background: white;
+}
+/***************** Popup ends here *****************************/
+
+.btn-link.focus,
+.btn-link:focus {
+  outline: 0;
+  box-shadow: none;
+}
+
+.purchase-order {
+  .col-md-8,
+  .col-md-2 {
+    border: 1px solid #999;
+    padding: 0.5rem;
+  }
+}
+
+.search-box {
   background-image: url("../images/search.png");
   background-repeat: no-repeat;
   background-size: 25px;
@@ -71,6 +472,21 @@ html, body, #root, #root>div {
   background-color: #c9cbcb;
   background-position: center;
 }
+
+.measure-delete-btn {
+  background-image: url("../images/delete.png");
+  background-size: 100%;
+  background-repeat: no-repeat;
+  background-position: center;
+  height: 30px;
+}
+.remove-btn {
+  background-image: url("../images/remove.png");
+  background-size: 100%;
+  background-repeat: no-repeat;
+  background-position: center;
+  height: 30px;
+}
 .edit-btn {
   background-image: url("../images/edit-btn.png");
   background-size: 50%;
@@ -81,23 +497,23 @@ html, body, #root, #root>div {
 
 .btn-blue {
   background: #166470;
-  color: #FCFCFC;
+  color: #fcfcfc;
 }
 .btn-green {
   background: #4cca2e;
-  color: #FCFCFC;
+  color: #fcfcfc;
 }
-input[type=number]{
+input[type="number"] {
   width: 80px;
 }
-.blue-box-div  {
+.blue-box-div {
   margin-top: 10px;
   background: #cde9ef;
   padding: 15px;
   border-radius: 5px;
 }
 .white-border-right {
-  border-right: 2px solid #FCFCFC;
+  border-right: 2px solid #fcfcfc;
 }
 .breadcrumb-item + .breadcrumb-item::before {
   content: ">";
@@ -106,354 +522,15 @@ input[type=number]{
   padding: 0;
   background: none;
 }
-/******************** Page Ends Here ********************************/
-
-
-.section-header {
-  color: #22b2c8;
+.sticky-top {
+  z-index: 99;
 }
-.blue-color {
-  color: #067bc4;
+.alert {
+  margin: 10px 0 0 0;
 }
-.green-text-color {
-  color: #528792;
+.acc-description {
+  width: 130px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
-.green-text-color2 {
-  color: #084852;
-}
-.list-group-item {
-  background-color: #2fd0df;
-  border: 4px solid #2fd0df;
-  margin: 5px 0;
-  border-radius: 5px;
-}
-.list-group-item:focus, .list-group-item:hover{
-  border: 4px solid white;
-  background-color: #2fd0df;
-}
-.list-group-item+.list-group-item {
-  border-top-width: 4px;
-}
-.list-group-item.active {
-  border: 4px solid white;
-  background-color: #2fd0df;
-  color: #495057;
-  border-top-width: 4px;
-}
-.list-group-item+.list-group-item.active {
-  margin: 5px 0;
-  border-top-width: 4px; 
-}
-
-/***************** Header Starts here *********************************/
-.page-header {
-  padding: 10px 0;
-  color: #bcd1cf;
-}
-.logo-header {
-  height: 40px;
-}
-/***************** Header Ends here ********************************/
-
-
-/***************** Login Starts here ********************************/
-.login-div{
-  position: relative;
-  top:20%;
-}
-/***************** Login Ends here ********************************/
-
-
-.tool-badge {
-  color: #5ca5b9;
-  background-color: #cbf3f7;
-  padding: 10px;
-  margin: 0 10px 5px 0;
-  font-weight: 400;
-}
-.date-badge {
-  background-color: #034754;
-  color: #fff;
-  margin: 0 0 0 5px;
-  padding: 4px;
-  font-weight: 100;
-}
-.badge {
-  &.submitted {
-    background-color: #72c9e3;
-  }
-  &.accepted {
-    background-color: #d7b1eb;
-  }
-  &.pending {
-    background-color: #fed35b;
-  }
-  &.new {
-    background-color: #f4afbf;
-  }
-  &.closed {
-    background-color: #c1c1c1;
-  }
-  &.inProgress {
-    background-color: #72c9e3;
-  }
-}
-
-
-.list-item-detail {
-  margin-right: 0;
-  margin-left: 0;
-}
-.list-item-detail div {
-  padding: 0 0 0 25px;
-  &.rightarrow-icon {
-    padding: 0 25px 0 0;
-    text-align: right;
-  }
-} 
-.admin-quote-page .quote-data-div p {
-  font-size: 14px;
-  font-weight: 200;
-}
-
-
-
-p.ellipses_two {
-    display: -webkit-box;
-    max-width: 100%;
-    -webkit-line-clamp: 2;
-    -webkit-box-orient: vertical;
-    overflow: hidden;
-}
-
-.underline {
-    font-weight: 300;
-    display: inline-block;
-    padding-bottom: 5px;
-    position: relative;
-  }
-.underline:before{
-      content: "";
-      position: absolute;
-      width: 100%;
-      height: 1px;
-      bottom: 0;
-      left: 2px;
-      border-bottom: 1px solid #fff;
-  }
-  .underline.blue:before {
-    border-color: #51afea;
-  }
-  .half:before{
-    width: 35%;
-  }
-  [data-letters]::after {
-    content:attr(data-letters);
-    display:inline-block;
-    font-size:1em;
-    width:2.5em;
-    height:2.5em;
-    line-height:2.5em;
-    text-align:center;
-    border-radius:50%;
-    background:#009cda;
-    vertical-align:middle;
-    margin: 0 0 0 5px;
-    color:#92daf0;
-    }
-    
-    .footer-div {
-      color: #127479;
-      text-align: center;
-      padding: 20px;
-      position: fixed;
-      left: 0px;
-      bottom: 0px;
-      height: 50px;
-      width: 100%;
-    }
-
-
-
-/***************** Sidebar Starts here *****************************/
-
-  .sidebar-div li.nav-item {
-    width: 40px;
-    height: 40px;
-    margin: 5px;
-    background-color: #7cb1b9;
-    border-radius: 50%;
-    padding: 5px;
-    a.nav-link {
-      height: 100%;
-      width: 100%;
-    }
-    &.nav-quote-req a {
-      background-image: url("../images/user1.png");
-      background-size: contain;
-      background-repeat:no-repeat;
-    }
-    &.nav-workers a {
-      background-image: url("../images/user.png");
-      background-size: contain;
-      background-repeat:no-repeat;
-    }
-    &.nav-mail a {
-      background-image: url("../images/mail.png");
-      background-size: contain;
-      background-repeat:no-repeat;
-    }
-    &.nav-test a {
-      background-image: url("../images/test.png");
-      background-size: contain;
-      background-repeat:no-repeat;
-    }
-    &.nav-projects a {
-      background-image: url("../images/projects.png");
-      background-size: contain;
-      background-repeat:no-repeat;
-    }
-    
-    &.nav-operations a {
-      background-image: url("../images/operations.png");
-      background-size: contain;
-      background-repeat:no-repeat;
-    }
-    &.nav-inventory a {
-      background-image: url("../images/inventory.png");
-      background-size: contain;
-      background-repeat:no-repeat;
-    }
-    &:hover {
-      background-color: #1ed3ff;
-      border: 1px solid #fff !important;
-    }
-  }
-  
-
-  /***************** Sidebar Ends here *****************************/
-
-
-
-.admin-list-page {
-  .quote-req-list {
-    color: #FFF;
-    font-size: 14px;
-    margin: 10px 0 0 0;
-    .quote-req-table {
-      background: #cde9ef;
-      padding: 15px;
-      border-radius: 5px;
-      color: #666;
-      input[type=checkbox] {
-        margin: 0 5px 0 0;
-      }
-    }
-    .quote-req-table .row::after {
-      content: "";
-      background: #f7f6f6;
-      position: relative;
-      bottom: 0px;
-      height: 1px;
-      width: 98%;
-      margin-left: 1%;
-      margin-bottom: 5px;
-    }
-  }
-  .quote-req-table .row:last-of-type::after{
-    content: "";
-      background: #666;
-      position: relative;
-      bottom: 0px;
-      height: 0px;
-      margin-bottom: 0;
-  }
-  .add-btn,.edit-btn,.delete-btn {
-    height: 100%;
-    width: 45px;
-    position: relative;
-    top: -2px;
-    background-color: #c9cbcb;
-    margin: 0 5px 0 0;
-  }
-  .has-search {
-    display: inline-block;
-    width: 50%;
-    margin: 0 15px 0 0;
-  }
-  .description-truncate  {
-    max-width: 190px;
-  }
-  .projectname-truncate  {
-    font-weight: 400;
-    font-size: 14px;
-    max-width: 65%;
-    input[type=radio] {
-      margin: 0 5px 0 0;
-    }
-  }
-  
-  .attachment-badge {
-    background-image: url("../images/attachment.png");
-    background-repeat: no-repeat;
-    background-size: 20px;
-    height: 19px;
-    width: 30px;
-    text-align: right;
-    color: #e8eef1;
-    font-size: 12px;
-    background-color: #a8c0cb;
-  }
-}
-   /***************** Admin Inventory starts here *****************************/
-   .operation-div {
-    max-width: 17%;
-    .operation-text-truncate {
-      max-width: 75%;
-      white-space:nowrap; 
-      overflow:hidden; 
-      text-overflow: ellipsis;
-    }
-  }
-   /***************** Admin Inventory ends here *****************************/
-.quote-measurements {
-  .table {
-    margin-bottom: 0;
-  }
-  .table tr td, .table th {
-    border-top: 0;
-  }
-  .table tbody tr td {
-    padding: .75rem;
-    border-top: 1px solid #dee2e6;
-  }
-  .delete-btn {
-    background-color: transparent;
-  }
-}
-.measurements-header {
-  background: none;
-  border: 0;
-} 
-/***************** Popup starts here *****************************/
-.popup {
-  position: fixed;
-  width: 100%;
-  height: 100%;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  margin: auto;
-  background-color: rgba(0,0,0, 0.5);
-}
-.popup_inner {
-  position: absolute;
-  left: 25%;
-  right: 25%;
-  top: 25%;
-  bottom: 25%;
-  margin: auto;
-  background: white;
-}
-/***************** Popup ends here *****************************/
