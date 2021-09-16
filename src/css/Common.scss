@@ -560,3 +560,44 @@ input[type="number"] {
   overflow: hidden;
   text-overflow: ellipsis;
 }
+
+
+
+
+.dd-wrapper{
+  position: relative;
+  user-select: none;
+  .dd-header
+   {
+    
+    position: relative;
+    border-radius: 50%;
+    padding: 5px 10px;
+    margin: 0 0 0 5px;
+    background-color:#31edff;
+    line-height: 38px;
+    cursor: default;
+    cursor: pointer;
+    color:#000;
+
+   }
+   .dd-list
+    {
+      position: absolute;
+    z-index: 10;
+    background-color: #fff;
+    background-clip: padding-box;
+    border: 1px solid rgba(0,0,0,.15);
+    border-radius: .25rem;
+    }
+
+    .dd-scroll-list
+      {
+        overflow-y: scroll;
+      max-height: 215px;
+      padding: 15px 0;
+      }
+
+      
+}
+
