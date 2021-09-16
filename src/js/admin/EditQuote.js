@@ -429,6 +429,41 @@ debugger;
       }
     </div>);
   }
+  removeUploadedImage(file) {
+
+/*
+    const config = {
+        bucketName: 'fuentes-fileupload',
+        dirName: 'quote-attachments',
+        region: 'us-west-1',
+        accessKeyId: 'AKIA5ARA5MYMNVC47U6F',
+        secretAccessKey: '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'
+    }
+   
+   
+    const ReactS3Client = new S3(config);
+
+    const filename = file.fileName;
+
+    ReactS3Client
+        .deleteFile(filename)
+        .then(response => console.log(response))
+        .catch(err => console.error(err))
+
+
+*/
+
+}
+  showUploadImage(filePath) {
+    this.setState({
+        isPopupOpen: true,
+        popupConfig: {
+            header: "Uploaded Data",
+            body: filePath,
+            type: "image"
+        }
+    });
+}
 
   render() {
 
@@ -499,7 +534,16 @@ debugger;
                 </div>
                 <div className="quote-data-div">
                   <span className="underline half blue">Attachments</span>
-                  <p className="green-text-color">{uploads && uploads.length}</p>
+
+                  {uploads && uploads.map((item, index) => {
+                                return (
+                                    <div className="">
+                                        <button className="btn btn-link p-0" onClick={() => this.showUploadImage(item.filePath)}>{item.fileName}</button>
+                                        <button class="btn remove-btn" onClick={() => this.removeUploadedImage(item)}></button>
+                                    </div>
+                                )
+                            })
+                            }
 
                 </div>
                 {this.state.selectedItem.Measures &&

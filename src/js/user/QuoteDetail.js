@@ -137,25 +137,30 @@ class QuoteDetail extends Component {
         });
     }
     renderUploadsSection(uploads) {
+        if(uploads.length > 0){
         return (
-        
-        <div className="form-group">
-            <span className="underline blue">Uploads</span>
-            {uploads && uploads.map((item, index) => {
-                return (
-                    <div className="row pb-2" >
-                        <div className="col">
-                            <button className="btn btn-link" onClick={() => this.showUploadImage(item.filePath)}>{item.fileName}</button>
+           
+                <div className="form-group">
+                <span className="underline blue">Uploads</span>
+                {uploads.map((item, index) => {
+                    return (
+                        <div className="row pb-2" >
+                            <div className="col pl-0">
+                                <button className="btn btn-link" onClick={() => this.showUploadImage(item.filePath)}>{item.fileName}</button>
+                            </div>
                         </div>
-                    </div>
-                )
-            })
-
-            }
-        </div>
+                    )
+                })
+    
+                }
+            </div>
+            
+           
+        
         
         
         );
+            }
     }
     renderMeasurementsDetailSection(measures) {
 
@@ -425,7 +430,7 @@ class QuoteDetail extends Component {
 
                     <div className="d-inline-block">
                         
-                        <div className="col">
+                        <div className="col pl-0">
                             <span className="underline blue mb-2">Status</span>
                             <p> {this.props.dataFromParent.status}
 
