@@ -12,7 +12,7 @@ class QuoteDetail extends Component {
     state = {
         formInputList: this.props.dataFromParent.Measures,
         selectedItem: this.props.dataFromParent,
-        measuresObjId: this.props.dataFromParent.Measures.length,
+        measuresObjId: this.props.dataFromParent.Measures && this.props.dataFromParent.Measures.length,
         popupConfig: {},
         isPopupOpen: false
     }
@@ -50,9 +50,10 @@ class QuoteDetail extends Component {
         this.props.parentCallback();
     }
     editQuote() {
-        this.props.parentEditCallBack();
+        this.props.parentEditButtonCallBack();
     }
     saveQuote() {
+
         let newMeasuresArray = this.state.selectedItem.Measures.map(function(item) { 
             delete item.id; 
             return item; 
@@ -61,18 +62,56 @@ class QuoteDetail extends Component {
         var data = {
             "title": this.state.selectedItem.title,
             "desc": this.state.selectedItem.desc,
-            "measures": newMeasuresArray
+            "Measures": newMeasuresArray,
+            "startDate": this.state.selectedItem.startDate,
+            "endDate": this.state.selectedItem.endDate,
+            "Uploads": this.state.selectedItem.uploads
         };
-        UserService.editQuote(this.state.selectedItem.id, data).then(
+        UserService.editQuote(this.props.dataFromParent.id, data).then(
             response => {
-                //this.props.parentCreateCallBack(response.data);
+                this.props.parentEditCallBack(response.data);
                 //console.log(response.data);
-                debugger;
+                
             },
             error => {
                 console.log("Error");
             }
         );
+    }
+    handleBrowseFileInput(e) {
+        const file = e.target.files[0];
+        if (file) {
+            const config = {
+                bucketName: 'fuentes-fileupload',
+                dirName: 'quote-attachments',
+                region: 'us-west-1',
+                accessKeyId: 'AKIA5ARA5MYMNVC47U6F',
+                secretAccessKey: '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'
+            }
+            const ReactS3Client = new S3(config);
+            const newFileName = file.name;
+
+            ReactS3Client
+                .uploadFile(file, newFileName)
+                .then(data => {
+                    var newUploads = {
+                        "fileName": newFileName,
+                        "filePath": data.location
+                    };
+                    var obj = this.state.selectedItem;
+
+                    if (obj.uploads) {
+                        obj['uploads'].push(newUploads);
+                    } else {
+                        obj['uploads'] = [];
+                        obj['uploads'].push(newUploads);
+                    }
+                    this.setState({ selectedItem: obj });
+
+                })
+                .catch(err => console.error(err))
+
+        }
     }
 
     addMeasuresClick() {
@@ -137,7 +176,7 @@ class QuoteDetail extends Component {
         });
     }
     renderUploadsSection(uploads) {
-        if(uploads.length > 0){
+        if(uploads && uploads.length > 0){
         return (
            
                 <div className="form-group">
@@ -166,7 +205,7 @@ class QuoteDetail extends Component {
 
         return (<div className="form-group">
             <span className="underline blue">Measurements</span>
-            {measures.length > 0 &&
+            {measures &&
                 <div className="row">
                     <div className="col">
                         <label>Name</label>
@@ -309,7 +348,7 @@ class QuoteDetail extends Component {
                     <div className="form-group">
                         <label>Attachments</label>
                         <label className="btn btn-blue btn-sm pr-4 pl-4 ml-2">
-                            Browse <input type="file" hidden />
+                        Browse <input type="file" hidden onChange={this.handleBrowseFileInput.bind(this)} />
                         </label>
 
                         <div className="col-3 attachment-icon">
@@ -340,7 +379,18 @@ class QuoteDetail extends Component {
         };
         UserService.savePOUrl(this.state.selectedItem.id, data).then(
             response => {
-                alert(response.data.message);
+                
+                this.setState({
+                    isPopupOpen: true,
+                    popupConfig: {
+                        header: "Message",
+                        body: response.data.message,
+                        type: "message"
+                    }
+                });
+
+
+
             },
             error => {
                 console.log("Error");
@@ -409,17 +459,13 @@ class QuoteDetail extends Component {
                         <span className="underline blue mb-2">Order details</span>
                         <div class="row ml-2">
                             <div class="col-md-8">Operation Cost</div>
-                            <div class="col-md-2">2</div>
+                            <div class="col-md-2">{this.props.dataFromParent.operationCostTotal}</div>
                             <div class="col-md-8">Inspection Amount</div>
-                            <div class="col-md-2">1</div>
-                            <div class="col-md-8">Sub Total</div>
-                            <div class="col-md-2">3</div>
-                            <div class="col-md-8">Total tax</div>
+                            <div class="col-md-2">{this.props.dataFromParent.inspectionTotal}</div>
+                            <div class="col-md-8">Tax</div>
                             <div class="col-md-2">5%</div>
-                            <div class="col-md-8"></div>
-                            <div class="col-md-2"></div>
-                            <div class="col-md-8">Total Cost</div>
-                            <div class="col-md-2">8</div>
+                            <div class="col-md-8">Sub Total</div>
+                            <div class="col-md-2">{this.props.dataFromParent.total}</div>
                         </div>
                     </div>
                     

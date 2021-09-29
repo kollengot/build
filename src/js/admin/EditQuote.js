@@ -168,14 +168,46 @@ class QuoteReqUpdate extends Component {
       }
     );
   }
-  changeQuoteStatus(status) {
+  rejectQuote() {
+
+    this.setState({
+      isPopupOpen: true,
+      popupConfig: {
+        header: "Reject Quote",
+        body: '',
+        type: "rejectQuote"
+      }
+    });
+  }
+  changeQuoteToProject() {
+    var data = {
+      "name":this.state.selectedItem.title,
+      "desc":this.state.selectedItem.desc,
+      "startDate":this.state.selectedItem.endDate,
+      "endDate":this.state.selectedItem.startDate
+  };
+    AdminService.convertToProject(this.state.selectedItem.id, data).then(
+      response => {
+        if(response.data) 
+          this.showPopupMessage(response.data.message);
+      },
+      error => {
+        console.log("Error");
+      }
+    );
+  }
+
+  changeQuoteStatus(status,reasonTxt) {
     var data = {
       "status": status
     };
+    if(status === "QUOTE_REJECTED") {
+      data.reason = reasonTxt
+    }
     AdminService.changeStatus(this.state.selectedItem.id, data).then(
       response => {
-        console.log(response);
-        this.showPopupMessage(response.msg);
+        if(response.data) 
+          this.showPopupMessage(response.data.message);
       },
       error => {
         console.log("Error");
@@ -198,7 +230,6 @@ class QuoteReqUpdate extends Component {
     this.props.parentCallback();
   }
   deleteOperation(opId,opName,event) {
-debugger;
     this.setState({
       deleteOpId: opId,
       isPopupOpen: true,
@@ -225,7 +256,6 @@ debugger;
   handleReqAvailChange = event => {
     let { value, min, max } = event.target;
     value = Math.max(Number(min), Math.min(Number(max), Number(value)));
-    alert(value);
     this.setState({ value });
   }
 
@@ -279,21 +309,34 @@ debugger;
 
   };
 
-  handleModalYes = () => {
-
+  handleModalYes = (data) => {
+    
     this.setState({
       isPopupOpen: false
     });
 
 
-    var tempList = this.state.selectedItem.QuoteOperation.filter(item => item.Operations.id !== this.state.deleteOpId);
-    var tmpSelectedItem = this.state.selectedItem;
-    tmpSelectedItem.QuoteOperation = tempList;
-    this.setState({
-      selectedItem: tmpSelectedItem
-    });
+  if(this.state.popupConfig.type === "rejectQuote")
+  {
+    this.changeQuoteStatus("QUOTE_ADMIN_REJECTED", data);
+  }
+   
+else {
+  var tempList = this.state.selectedItem.QuoteOperation.filter(item => item.Operations.id !== this.state.deleteOpId);
+  var tmpSelectedItem = this.state.selectedItem;
+  tmpSelectedItem.QuoteOperation = tempList;
+  this.setState({
+    selectedItem: tmpSelectedItem
+  });
+}
 
 
+
+
+
+    
+
+ 
 
     /*
     AdminService.deleteQuote(this.state.selectedItem.id).then(
@@ -429,31 +472,7 @@ debugger;
       }
     </div>);
   }
-  removeUploadedImage(file) {
-
-/*
-    const config = {
-        bucketName: 'fuentes-fileupload',
-        dirName: 'quote-attachments',
-        region: 'us-west-1',
-        accessKeyId: 'AKIA5ARA5MYMNVC47U6F',
-        secretAccessKey: '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'
-    }
-   
-   
-    const ReactS3Client = new S3(config);
-
-    const filename = file.fileName;
-
-    ReactS3Client
-        .deleteFile(filename)
-        .then(response => console.log(response))
-        .catch(err => console.error(err))
-
-
-*/
-
-}
+ 
   showUploadImage(filePath) {
     this.setState({
         isPopupOpen: true,
@@ -499,8 +518,8 @@ debugger;
           
 
             {headerBtn(this.state.selectedItem.status) > 4 ? ( <div className="col-8 text-right">
-                  <button type="button" className="btn btn-blue btn-sm pr-4 pl-4" onClick={() => this.changeQuoteStatus("QUOTE_REJECTED")} >Reject</button>
-                  <button type="button" className="btn btn-green btn-sm ml-2 pr-4 pl-4" onClick={() => this.changeQuoteStatus("PROJECT_IN_PROGRESS")}>Accept Purchase Order</button>
+                  <button type="button" className="btn btn-blue btn-sm pr-4 pl-4" onClick={() => this.rejectQuote()} >Reject</button>
+                  <button type="button" className="btn btn-green btn-sm ml-2 pr-4 pl-4" onClick={() => this.changeQuoteToProject()}>Accept Purchase Order</button>
                 </div>) : (<div className="col-8 text-right">
                   <button type="button" className="btn btn-blue btn-sm pr-4 pl-4" onClick={() => this.resetReq()} >Reset</button>
                   <button type="button" className="btn btn-info btn-sm ml-2 pr-4 pl-4" onClick={() => this.saveQuoteUpdate()}>Save</button>
@@ -539,7 +558,7 @@ debugger;
                                 return (
                                     <div className="">
                                         <button className="btn btn-link p-0" onClick={() => this.showUploadImage(item.filePath)}>{item.fileName}</button>
-                                        <button class="btn remove-btn" onClick={() => this.removeUploadedImage(item)}></button>
+                                       
                                     </div>
                                 )
                             })

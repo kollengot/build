@@ -27,10 +27,10 @@ axios.interceptors.response.use((response) => {
 
 class AdminService {
 
-    getAllQuotes() {
+    getAllQuotes(pageNo) {
         var config = {
             method: 'get',
-            url: API_URL + 'quotes'
+            url: API_URL + 'quotes' +'?page='+pageNo
         };
 
         return axios(config)
@@ -453,6 +453,21 @@ class AdminService {
         var config = {
             method: 'post',
             url: API_URL + 'project/changeStatus/'+ id,
+            data: data
+        };
+        return axios(config)
+            .then(function (response) {
+                console.log(response);
+                return response;
+            })
+            .catch(function (error) {
+                console.log(error);
+            });
+    }
+    convertToProject(id, data) {
+        var config = {
+            method: 'put',
+            url: API_URL + 'quotes/convertToProject/'+ id,
             data: data
         };
         return axios(config)
