@@ -179,7 +179,7 @@ class ManageQuote extends Component {
                         <label>Attachments</label>
                     </div>
                 </div>
-                <div className="quote-req-table">
+                <div className="quote-req-table" style={{maxHeight: (window.innerHeight - 200) + 'px'}}>
 
                 <InfiniteScroll
                 pageStart={0}

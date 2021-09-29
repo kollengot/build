@@ -472,7 +472,31 @@ else {
       }
     </div>);
   }
- 
+  removeUploadedImage(file) {
+
+/*
+    const config = {
+        bucketName: 'fuentes-fileupload',
+        dirName: 'quote-attachments',
+        region: 'us-west-1',
+        accessKeyId: 'AKIA5ARA5MYMNVC47U6F',
+        secretAccessKey: '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'
+    }
+   
+   
+    const ReactS3Client = new S3(config);
+
+    const filename = file.fileName;
+
+    ReactS3Client
+        .deleteFile(filename)
+        .then(response => console.log(response))
+        .catch(err => console.error(err))
+
+
+*/
+
+}
   showUploadImage(filePath) {
     this.setState({
         isPopupOpen: true,
@@ -572,37 +596,14 @@ else {
 
 
               {this.state.selectedItem.status === "PROJECT_IN_PROGRESS" || this.state.selectedItem.status === "QUOTE_PO_SUBMIT" ?
-                <div className="col">
-                  <div className="row">
-                    <div className="purchase-order d-inline-block form-group col">
-                      <span className="underline blue mb-2">Order details</span>
-                      <div className="row ml-2">
-                        <div className="col-md-8">Operation Cost</div>
-                        <div className="col-md-2">2</div>
-                        <div className="col-md-8">Inspection Amount</div>
-                        <div className="col-md-2">1</div>
-                        <div className="col-md-8">Sub Total</div>
-                        <div className="col-md-2">3</div>
-                        <div className="col-md-8">Total tax</div>
-                        <div className="col-md-2">5%</div>
-                        <div className="col-md-8"></div>
-                        <div className="col-md-2"></div>
-                        <div className="col-md-8">Total Cost</div>
-                        <div className="col-md-2">8</div>
-                      </div>
-
-                    </div>
-
-                    <div className="col">
+                
+                 <div className="col">
                       <span className="underline blue mb-2">Purchase Order</span>
-                      <img src={this.state.selectedItem.submittedPO} className='img-thumbnail' alt='...'></img>
+                      <img src={this.state.selectedItem.submittedPO} className='po-img' alt='...'></img>
 
                     </div>
 
-                  </div>
 
-
-                </div>
                 :
 
                 (<div className="col quote-measurements">

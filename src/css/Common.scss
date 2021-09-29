@@ -309,6 +309,7 @@ p.ellipses_two {
       padding: 15px;
       border-radius: 5px;
       color: #666;
+      overflow: auto;
       input[type="checkbox"] {
         margin: 0 5px 0 0;
       }
@@ -599,5 +600,8 @@ input[type="number"] {
       }
 
       
+}
+.po-img {
+  max-width: 60%;
 }
 
