@@ -107,8 +107,11 @@ class ManageWorker extends Component {
             }
         });
     }
-    parentCallback = (message) => {
-        if(message) this.showPopup(message);
+    parentCallback = (response) => {
+        if(response && response.data.message){
+            this.showPopup(response.data.message);
+            this.getAllWorkerList();
+        } 
         this.setState({
             editWorkerPage: false
         });

@@ -299,6 +299,11 @@ p.ellipses_two {
   max-height: 90%;
 }
 
+.modal-content {
+  width:max-content;
+  min-width: 500px;
+}
+
 .admin-list-page {
   .quote-req-list {
     color: #fff;

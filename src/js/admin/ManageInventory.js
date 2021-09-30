@@ -119,11 +119,26 @@ class ManageInventory extends Component {
             selectedItem: selectedItem
         });
     }
-    parentCallback = () => {
+    showPopup(message){
+        this.setState({
+            isPopupOpen: true,
+            popupConfig : {
+                header: "Message",
+                body:message,
+                type: "message"
+            }
+        });
+    }
+    parentCallback = (response) => {
+        if(response && response.data.message){
+            this.showPopup(response.data.message);
+            this.getAllInventoryList();
+        }
         this.setState({
             editInventoryPage:false
           });
     }
+   
     renderInventoryList() {
         return (<div className="col admin-list-page">
             <div className="list-group-header section-header row">

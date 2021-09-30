@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import { Table } from 'reactstrap';
-
+import Tabs from 'react-bootstrap/Tabs';
+import Tab from 'react-bootstrap/Tab';
 import Checkbox from "../components/Checkbox";
 import TableRow from "../components/TableRow";
 import TableHeader from "../components/TableHeader";
@@ -22,7 +23,8 @@ class ConfigureOperation extends Component {
             alertConfig: {
                 "variant": "danger"
             },
-            totalCost: 0
+            totalCost: 0,
+            tabActiveKey: "tools"
         }    
         this.getData();
     }
@@ -218,12 +220,25 @@ class ConfigureOperation extends Component {
         selectedObj['totalCost'] = this.state.totalCost;
         this.props.popupClose(selectedObj);
     };
+    selectTab(key) {
+        this.setState({
+            tabActiveKey: key
+        });
+    };
 
     render() {
         return (
             <React.Fragment>
-                
-                {this.props.showTools && <div>
+
+
+        <Tabs
+          id="controlled-tab-example"
+          activeKey={this.state.tabActiveKey} onSelect={this.selectTab.bind(this)} >
+   
+          <Tab eventKey="tools" title="Tools">
+            
+
+          {this.props.showTools && <div>
                     <span className="underline blue">Add Tools</span>
                     <Table responsive="sm">
                         <tbody>
@@ -233,7 +248,13 @@ class ConfigureOperation extends Component {
                     </Table>
                     </div>
                 }
-                {this.props.showWorkers && 
+
+
+          </Tab>
+          <Tab eventKey="workers" title="Workers">
+            
+            
+          {this.props.showWorkers && 
                 <div>
                     <span className="underline blue">Add Worker</span>
 
@@ -246,7 +267,23 @@ class ConfigureOperation extends Component {
 
                 </div>
                 }
+
+          </Tab>
+       
+        </Tabs>
+
+
+
+
+
+                
+                
                 <button onClick={this.saveConfigOperation.bind(this)} className="btn btn-success btn-sm" > Save </button>
+
+
+
+
+
 
                 {this.state.showAlert && < MyAlert alertConfig = {this.state.alertConfig} showAlert={this.state.showAlert} /> }
 

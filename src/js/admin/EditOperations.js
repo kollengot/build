@@ -1,6 +1,4 @@
 import React, { Component } from 'react';
-
-import MyAlert from "../components/MyAlert";
 import AdminService from "../services/admin.service";
 
 class EditOperations extends Component {
@@ -10,28 +8,25 @@ class EditOperations extends Component {
             item: [],
             toolsList: [],
             selectedTool: {},
-            showAlert: false,
-            alertConfig: {
-                "variant": "danger"
-            },
-            //workerList: [],
-            //selectedWorker: {}
+            errors: {}
         }
-        this.getOperationById();
+        if(this.props.selectedId) this.getOperationById();
         this.getAllTools();
         //this.getAllWorkers();
     }
     getOperationById() {
-        AdminService.getOperationById(this.props.selectedId).then(
-            response => {
-                this.setState({
-                    item: response.data
-                });
-            },
-            error => {
-                console.log("Error");
-            }
-        );
+        
+            AdminService.getOperationById(this.props.selectedId).then(
+                response => {
+                    this.setState({
+                        item: response.data
+                    });
+                },
+                error => {
+                    console.log("Error");
+                }
+            );
+         
     }
     getAllTools() {
         AdminService.getAllInventory().then(
@@ -75,21 +70,25 @@ class EditOperations extends Component {
     /*handleWorkerSelection(event) {
         this.state.selectedWorker = this.state.workerList.find(o => o.id == event.target.value);
     }*/
-    showAlertMessage(msg) {
-        this.setState(prevState => ({
-            alertConfig: { 
-                ...prevState.alertConfig,
-                message: msg
-            },
-            showAlert: true 
-        }))
-    }
+
 
     addTools(event) {
         if (!this.state.selectedTool.Inventories || !this.state.item.toolRequired) {
-            this.showAlertMessage("Please select Tools / Materials and add Required quantity");
+            let errors = {};
+            if (!this.state.selectedTool.Inventories) {
+                errors["selectTool"] = "Please select inventory.";
+            }
+            if (!this.state.item.toolRequired) {
+                errors["toolRequired"] = "Please enter required quantity.";
+            }
+            this.setState({
+                errors: errors
+            });
+
         } else {
-            this.setState({ showAlert: false });
+            this.setState({
+                errors: {}
+            });
 
             if (this.state.item.id) {
 
@@ -118,7 +117,6 @@ class EditOperations extends Component {
             selectedOperation.OperationWorkers.push(this.state.selectedWorker);
             this.setState({ item: selectedOperation });
         } else {
-            debugger;
             var selectedOperation = this.state.item;
             if (!selectedOperation.OperationWorkers) {
                 selectedOperation['OperationWorkers'] = [];
@@ -131,60 +129,56 @@ class EditOperations extends Component {
         }
 
     }*/
-
-    saveOperation() {
-        console.log(this.state.item);
-        var tmpworkerobj = [];
-        this.state.item.OperationWorkers.map((item, i) => {
-            if (item.id) {
-                var workerobj = {};
-                workerobj["id"] = item.id;
-                workerobj["required_hrs"] = item.required_hrs;
-                workerobj["est_cost"] = item.est_cost;
-                tmpworkerobj.push(workerobj);
-            }
-        });
-        var tmpInvobj = [];
-        this.state.item.OperationInventories.map((item, i) => {
-            if (item.id) {
-                var invobj = {};
-                invobj["id"] = item.id;
-                invobj["required_qty"] = item.required_qty;
-                tmpInvobj.push(invobj);
-            }
-        });
-        var data = {
-            "name": this.state.item.name,
-            "desc": this.state.item.desc,
-            "items": tmpInvobj,
-            "workers": tmpworkerobj
-        };
-
-
-
-        if (this.state.item.id != undefined) {
-            AdminService.editOperation(this.state.item.id, data).then(
-                response => {
-                    console.log(response.data.message);
-                    //this.showPopupMessage(response.data.message);
-                },
-                error => {
-                    console.log("Error");
-                }
-            );
-        } else {
-
-            AdminService.createOperation(data).then(
-                response => {
-                    console.log(response.data.message);
-                    //this.showPopupMessage(response.data.message);
-                },
-                error => {
-                    console.log("Error");
-                }
-            );
+    validateForm() {
+        let errors = {};
+        let isValid = true;
+        if (!this.state.item.name) {
+            isValid = false;
+            errors["name"] = "Please enter operation name.";
         }
-        this.props.parentCallback();
+        this.setState({
+            errors: errors
+        });
+        return isValid;
+
+    }
+    saveOperation() {
+        if (this.validateForm()) {
+            var tmpInvobj = [];
+            this.state.item.OperationInventories && this.state.item.OperationInventories.map((item, i) => {
+                if (item.Inventories.id) {
+                    var invobj = {};
+                    invobj["id"] = item.Inventories.id;
+                    invobj["required_qty"] = item.req_avail;
+                    tmpInvobj.push(invobj);
+                }
+            });
+            var data = {
+                "name": this.state.item.name,
+                "desc": this.state.item.desc,
+                "items": tmpInvobj
+            };
+            if (this.state.item.id != undefined) {
+                AdminService.editOperation(this.state.item.id, data).then(
+                    response => {
+                        this.props.parentCallback(response);
+                    },
+                    error => {
+                        console.log("Error");
+                    }
+                );
+            } else {
+                AdminService.createOperation(data).then(
+                    response => {
+                        this.props.parentCallback(response);
+                    },
+                    error => {
+                        console.log("Error");
+                    }
+                );
+            }
+
+        }
     }
     resetReq() {
 
@@ -203,7 +197,7 @@ class EditOperations extends Component {
                     <div className="col-6">
                         <select className="form-control" onChange={this.handleToolSelection.bind(this)}>
                             <option>Select Tools</option>
-                            {this.state.toolsList.map((toolItem) => (
+                            {this.state.toolsList && this.state.toolsList.map((toolItem) => (
                                 <option key={toolItem.id} value={toolItem.id}>{toolItem.itemName}</option>
                             ))}
                         </select>
@@ -212,10 +206,10 @@ class EditOperations extends Component {
                         <input type="number" className="form-control col-6 d-inline" onChange={this.handleChange.bind(this, 'toolRequired')} />
                         <button type="button" className="btn btn-green btn-sm ml-2 pr-4 pl-4 d-inline" onClick={this.addTools.bind(this)}>Add</button>
                     </div>
-                    <div className="font-italic text-center col-8">
-                    {this.state.showAlert && < MyAlert alertConfig = {this.state.alertConfig} /> }
-                    </div>
-                    
+                </div>
+                <div className="row">
+                    <div className="col text-danger">{this.state.errors.selectTool}</div>
+                    <div className="col text-danger">{this.state.errors.toolRequired}</div>
                 </div>
                 <div className="row mt-1 quote-req-header font-weight-bold">
                     <div className="col-sm">
@@ -228,8 +222,7 @@ class EditOperations extends Component {
                         <label>Availability</label>
                     </div>
                 </div>
-
-                {this.state.item.OperationInventories.map((item) => (
+                {this.state.item.OperationInventories && this.state.item.OperationInventories.map((item) => (
 
                     <div className="row mt-1">
                         <div className="col-sm">
@@ -283,6 +276,7 @@ class EditOperations extends Component {
                                     <input type="text"
                                         className="form-control" defaultValue={this.state.item.name}
                                         onChange={this.handleChange.bind(this, 'name')} />
+                                    <div className="text-danger">{this.state.errors.name}</div>
                                 </div>
                                 <div>
                                     <span>Description</span>
@@ -290,11 +284,8 @@ class EditOperations extends Component {
                                         defaultValue={this.state.item.desc}
                                         onChange={this.handleChange.bind(this, 'desc')}></textarea>
                                 </div>
-
                             </div>
-                            {this.state.item.OperationInventories && this.renderToolsList()}
-
-
+                            {this.renderToolsList()}
                         </div>
                     </div>
                 }
