@@ -115,9 +115,24 @@ class ManageCustomer extends Component {
             selectedItem: selectedItem
         });
     }
-    parentCallback = () => {
+    showPopup(message){
         this.setState({
-            editCustomerPage: false
+            isPopupOpen: true,
+            popupConfig : {
+                header: "Message",
+                body:message,
+                type: "message"
+            }
+        });
+    }
+    parentCallback = (response) => {
+        if(response && response.data.message){
+            this.showPopup(response.data.message);
+            this.getAllCustomerList();
+        } 
+        this.setState({
+            editCustomerPage: false,
+            selectedItem: []
         });
     }
     renderCustomerList() {

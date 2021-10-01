@@ -4,10 +4,10 @@ const API_URL = "https://funetus-api.herokuapp.com/";
 
 class UserService {
 
-    getAllQuotes() {
+    getAllQuotes(pageNo) {
         var config = {
             method: 'get',
-            url: API_URL + 'quotes'
+            url: API_URL + 'quotes' +'?page='+pageNo
         };
 
         return axios(config)
@@ -18,6 +18,8 @@ class UserService {
                 console.log(error);
             });
     }
+
+
     getSingleQuote(quoteId) {
         var config = {
             method: 'get',

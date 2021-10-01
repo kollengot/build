@@ -325,6 +325,20 @@ class AdminService {
                 console.log(error);
             });
     }
+    getSingleProject(id) {
+        var config = {
+            method: 'get',
+            url: API_URL + 'project/' + id
+        };
+
+        return axios(config)
+            .then(function (response) {
+                return response;
+            })
+            .catch(function (error) {
+                console.log(error);
+            });
+    }
     editProject(id,data) {
         var config = {
             method: 'put',

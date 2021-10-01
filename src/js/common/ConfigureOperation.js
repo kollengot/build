@@ -16,7 +16,6 @@ class ConfigureOperation extends Component {
             listitems: [],
             toolList: [],
             workerList: [],
-            searchValue: "",
             selectedToolList: [],
             selectedWorkerList: [],
             showAlert: false,
@@ -24,7 +23,9 @@ class ConfigureOperation extends Component {
                 "variant": "danger"
             },
             totalCost: 0,
-            tabActiveKey: "tools"
+            tabActiveKey: "tools",
+            workerSearchValue: "",
+            toolSearchValue: ""
         }    
         this.getData();
     }
@@ -208,10 +209,10 @@ class ConfigureOperation extends Component {
         }
     };
     createToolList = () => (
-        this.state.toolList.filter(item => item.itemName.toLowerCase().includes(this.state.searchValue)).map(this.createToolRow)
+        this.state.toolList.filter(item => item.itemName.toLowerCase().includes(this.state.toolSearchValue)).map(this.createToolRow)
     );
     createWorkerList = () => (
-        this.state.workerList.filter(item => item.name.toLowerCase().includes(this.state.searchValue)).map(this.createWorkerCheckbox)
+        this.state.workerList.filter(item => item.name.toLowerCase().includes(this.state.workerSearchValue)).map(this.createWorkerCheckbox)
     );
     saveConfigOperation(e) {
         var selectedObj = {};
@@ -225,7 +226,16 @@ class ConfigureOperation extends Component {
             tabActiveKey: key
         });
     };
-
+    handleToolSearchChange(e) {
+        this.setState({
+            toolSearchValue: e.target.value.toLowerCase()
+        });
+    }
+    handleWorkerSearchChange(e) {
+        this.setState({
+            workerSearchValue: e.target.value.toLowerCase()
+        });
+    }
     render() {
         return (
             <React.Fragment>
@@ -240,6 +250,12 @@ class ConfigureOperation extends Component {
 
           {this.props.showTools && <div>
                     <span className="underline blue">Add Tools</span>
+
+                    <div className="has-search mt-2">
+                        <span className="fa fa-search form-control-feedback"></span>
+                        <input type="text" className="form-control search-box" placeholder="Search Tools..." onChange={this.handleToolSearchChange.bind(this)} />
+                    </div>
+
                     <Table responsive="sm">
                         <tbody>
                             {this.createTableHeader("tool")}
@@ -257,7 +273,10 @@ class ConfigureOperation extends Component {
           {this.props.showWorkers && 
                 <div>
                     <span className="underline blue">Add Worker</span>
-
+                    <div className="has-search mt-2">
+                        <span className="fa fa-search form-control-feedback"></span>
+                        <input type="text" className="form-control search-box" placeholder="Search Workers..." onChange={this.handleWorkerSearchChange.bind(this)} />
+                    </div>
                     <Table responsive="sm">
                         <tbody>
                             {this.createTableHeader("worker")}

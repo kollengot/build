@@ -52,9 +52,6 @@ class ManageQuote extends Component {
                             hasMoreItems: false
                         });
                     }
-
-
-
                 }
             },
             error => {

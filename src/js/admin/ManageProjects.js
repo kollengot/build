@@ -108,13 +108,25 @@ class ManageProjects extends Component {
             selectedItem: selectedItem
         });
     }
-    parentCallback = () => {
+    showPopup(message){
         this.setState({
+            isPopupOpen: true,
+            popupConfig : {
+                header: "Message",
+                body:message,
+                type: "message"
+            }
+        });
+    }
+    parentCallback = (response) => {
+        this.setState({
+            editProjectPage: false,
             selectedItem: []
         });
-        this.setState({
-            editProjectPage:false
-          });
+        if(response && response.data.message){
+            this.showPopup(response.data.message);
+            this.getAllProjectList();
+        } 
     }
     getNumberOfDays(start, end) {
         const date1 = new Date(start);
@@ -124,8 +136,6 @@ class ManageProjects extends Component {
         const diffInDays = Math.round(diffInTime / oneDay);
         return diffInDays;
     }
-    
-
 
     renderProjectList() {
         return(
@@ -218,7 +228,7 @@ class ManageProjects extends Component {
         return (
             <React.Fragment>
                 <Popup popupConfig = {this.state.popupConfig} openFlag = {this.state.isPopupOpen} parentCloseCallback={this.handleClose.bind(this)} parentConfirmCallback = {this.handleModalYes.bind(this)}></Popup>
-                {this.state.editProjectPage ? <EditProject selectedItem={this.state.selectedItem} parentCallback= {this.parentCallback}/> : this.renderProjectList()}
+                {this.state.editProjectPage ? <EditProject selectedId={this.state.selectedItem.id} parentCallback= {this.parentCallback}/> : this.renderProjectList()}
             </React.Fragment>
         );
     }
