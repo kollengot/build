@@ -156,7 +156,7 @@ class EditCustomer extends Component {
                             </div>
                             <div>
                                 <span>Email</span>
-                                <input type="text"
+                                <input type="text" readOnly = {this.state.item.id ? true : false }
                                     className="form-control" defaultValue={this.state.item.email}
                                     onChange={this.handleChange.bind(this, 'email')} />
                                 <div className="text-danger">{this.state.errors.email}</div>

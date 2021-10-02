@@ -1,17 +1,15 @@
 import React, { Component } from 'react';
 import Popup from "../components/Popup";
 import { validationMessages } from '../common/Constants';
-
 import AdminService from "../services/admin.service";
-
 
 class ManageInspection extends Component {
     state = {
-        
         selectedItem: [],
         editInspectionPage: false,
         popupConfig: {},
-        isPopupOpen: false
+        isPopupOpen: false,
+        errors: {}
     }
     constructor(props) {
         super(props);
@@ -33,7 +31,6 @@ class ManageInspection extends Component {
     }
 
     editInspection() {
-       
         if (this.state.selectedItem && this.state.selectedItem.length === 0) {
             this.showPopup(validationMessages.NO_ITEM);
         } else {
@@ -77,11 +74,6 @@ class ManageInspection extends Component {
     }
 
     deleteInspection() {
-        /*var tempList = this.state.listitems.filter(item => item.id !== this.state.selectedItem.id);
-        this.setState({
-            listitems: tempList
-        });
-        */
         if (this.state.selectedItem && this.state.selectedItem.length === 0) {
             this.showPopup(validationMessages.NO_ITEM);
         } else {
@@ -101,11 +93,7 @@ class ManageInspection extends Component {
             selectedItem: selectedItem
         });
     }
-    parentCallback = () => {
-        this.setState({
-            editInspectionPage: false
-        });
-    }
+    
     handleFormChange(propertyName, event) {
        
     }
@@ -132,46 +120,69 @@ class ManageInspection extends Component {
             }
         });
     }
-    saveInspection() {
-        if(this.state.selectedItem.id !== undefined) {
-            var data = {
-                "name": this.state.selectedItem.name,
-                "cost": parseInt(this.state.selectedItem.cost),
-                "desc": this.state.selectedItem.desc
-            };
-
-            AdminService.editInspection(this.state.selectedItem.id ,data).then(
-                response => {
-                    if(response){
-                        this.showPopup(response.data.message);
-                    }
-                },
-                error => {
-                  console.log("Error");
-                }
-              );
-            
-
-
-        } else {
-            var data = {
-                "name": this.state.selectedItem.name,
-                "cost": parseInt(this.state.selectedItem.cost),
-                "desc": this.state.selectedItem.desc
-            };
-            AdminService.createInspection(data).then(
-                response => {
-                    if(response){
-                        this.showPopup(response.data.message);
-                    }
-                },
-                error => {
-                  console.log("Error");
-                }
-              );
-            
+    validateForm() {
+        let errors = {};
+        let isValid = true;
+        if (!this.state.selectedItem.name) {
+            isValid = false;
+            errors["name"] = "Please enter inspection name.";
         }
-        
+        if (!this.state.selectedItem.cost) {
+            isValid = false;
+            errors["cost"] = "Please enter inspection cost.";
+        }
+
+        this.setState({
+            errors: errors
+        });
+        return isValid;
+
+    }
+    saveEditCallBack(response) {
+        this.showPopup(response.data.message);
+        this.setState({
+            editInspectionPage: false
+        });
+        this.getAllInspectionList();
+    }
+    saveInspection() {
+        if(this.validateForm()) {
+            if(this.state.selectedItem.id !== undefined) {
+                var data = {
+                    "name": this.state.selectedItem.name,
+                    "cost": parseInt(this.state.selectedItem.cost),
+                    "desc": this.state.selectedItem.desc
+                };
+    
+                AdminService.editInspection(this.state.selectedItem.id ,data).then(
+                    response => {
+                        if(response){
+                            this.saveEditCallBack(response);
+                        }
+                    },
+                    error => {
+                      console.log("Error");
+                    }
+                  );
+            } else {
+                var data = {
+                    "name": this.state.selectedItem.name,
+                    "cost": parseInt(this.state.selectedItem.cost),
+                    "desc": this.state.selectedItem.desc
+                };
+                AdminService.createInspection(data).then(
+                    response => {
+                        if(response){
+                            this.saveEditCallBack(response);
+                        }
+                    },
+                    error => {
+                      console.log("Error");
+                    }
+                  );
+                
+            }
+        }
     }
   
     renderEditInspection() {
@@ -206,6 +217,7 @@ class ManageInspection extends Component {
                     <input type="text"
                         className="form-control" defaultValue={this.state.selectedItem.name}
                         onChange={this.handleChange.bind(this, 'name')} />
+                    <div className="text-danger">{this.state.errors.name}</div>
                 </div>
                 
                 <div>
@@ -221,6 +233,7 @@ class ManageInspection extends Component {
                     <input type="number"
                         className="form-control"  defaultValue={this.state.selectedItem.cost}
                         onChange={this.handleChange.bind(this, 'cost')}/>
+                    <div className="text-danger">{this.state.errors.cost}</div>
                 </div>
                 
                 
