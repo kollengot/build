@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import AdminService from "../services/admin.service";
+import AuthService from "../services/auth.service";
 
 class EditCustomer extends Component {
     state = {
@@ -14,7 +15,12 @@ class EditCustomer extends Component {
     }
     saveCustomer() {
         if(this.validateForm()) {
-            this.editCustomer();
+            if(this.state.item.id) {
+                this.editCustomer();
+            } else {
+                this.createNewCustomer();
+            }
+            
         }
     }
     validateForm() {
@@ -71,6 +77,24 @@ class EditCustomer extends Component {
                 console.log("Error");
             }
         ); 
+    }
+    createNewCustomer() {
+        var data = {
+            "name": this.state.item.name,
+            "email": this.state.item.email,
+            "phone": this.state.item.phone,
+            "address" : this.state.item.address,
+            "password": "cdsv3232"
+        };
+
+        AuthService.createCustomer(data).then(
+            response => {
+                this.props.parentCallback(response);
+            },
+            error => {
+                console.log("Error");
+            }
+        );
     }
 
     resetReq() {

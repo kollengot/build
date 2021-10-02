@@ -57,6 +57,21 @@ class AuthService {
             password
         });
     }
+    createCustomer(data) {
+        var config = {
+            method: 'put',
+            url: API_URL + "signup",
+            data: data
+        };
+
+        return axios(config)
+            .then(function (response) {
+                return response;
+            })
+            .catch(function (error) {
+                console.log(error);
+            });
+    }
 
     getCurrentUser() {
         return JSON.parse(localStorage.getItem('user'));

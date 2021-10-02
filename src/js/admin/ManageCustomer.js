@@ -80,14 +80,14 @@ class ManageCustomer extends Component {
         }
     }
 
-    /*addCustomer() {
+    addCustomer() {
         this.setState({
             selectedItem: []
         });
         this.setState({
             editCustomerPage: true
         });
-    }*/
+    }
     
     deleteCustomer() {
         if (this.state.selectedItem && this.state.selectedItem.length === 0) {
@@ -149,6 +149,7 @@ class ManageCustomer extends Component {
                     </div>
                     <button className="btn delete-btn" onClick={() => this.deleteCustomer()}></button>
                     <button className="btn edit-btn" onClick={() => this.editCustomer()}></button>
+                    <button className="btn add-btn" onClick={() => this.addCustomer()}></button>
                 </div>
             </div>
             <div className="quote-req-list">
