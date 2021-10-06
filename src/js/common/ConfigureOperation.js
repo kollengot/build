@@ -1,7 +1,8 @@
 import React, { Component } from 'react';
 import { Table } from 'reactstrap';
-
-import Checkbox from "../components/Checkbox";
+import Tabs from 'react-bootstrap/Tabs';
+import Tab from 'react-bootstrap/Tab';
+import InfiniteScroll from 'react-infinite-scroller';
 import TableRow from "../components/TableRow";
 import TableHeader from "../components/TableHeader";
 import AdminService from "../services/admin.service";
@@ -15,16 +16,23 @@ class ConfigureOperation extends Component {
             listitems: [],
             toolList: [],
             workerList: [],
-            searchValue: "",
             selectedToolList: [],
             selectedWorkerList: [],
             showAlert: false,
             alertConfig: {
                 "variant": "danger"
             },
-            totalCost: 0
+            totalCost: 0,
+            tabActiveKey: "tools",
+            workerSearchValue: "",
+            toolSearchValue: "",
+            hasMoreTools: true,
+            toolPageNo: 0,
+            hasMoreWorkers: true,
+            workerPageNo: 0
         }    
-        this.getData();
+       // this.getData();
+       this.getAllTools();
     }
 
     getData() {
@@ -37,11 +45,20 @@ class ConfigureOperation extends Component {
     }
 
     getAllTools() {
-        AdminService.getAllInventory().then(
+        debugger;
+        AdminService.getAllInventory(this.state.toolPageNo).then(
             response => {
+                var tmpListitems = [...this.state.toolList, ...response.data.rows];
                 this.setState({
-                    toolList: response.data.rows
+                    toolList: tmpListitems,
+                    toolPageNo: this.state.toolPageNo+1
                 });
+
+                if(this.state.toolPageNo >= response.data.currentPage) {
+                    this.setState({
+                        hasMoreTools: false
+                    });
+                }
             },
             error => {
                 console.log("Error");
@@ -50,12 +67,21 @@ class ConfigureOperation extends Component {
     }
 
     getAllWorkers() {
-        AdminService.getAllWorkers().then(
+        AdminService.getAllWorkers(this.state.workerPageNo).then(
             response => {
+                var tmpListitems = [...this.state.workerList, ...response.data.rows];
                 this.setState({
-                    workerList: response.data.rows
+                    workerList: tmpListitems,
+                    workerPageNo: this.state.workerPageNo+1
                 });
+
+                if(this.state.workerPageNo >= response.data.currentPage) {
+                    this.setState({
+                        hasMoreWorkers: false
+                    });
+                }
             },
+
             error => {
                 console.log("Error");
             }
@@ -188,7 +214,7 @@ class ConfigureOperation extends Component {
     createTableHeader = (type) => {
         var tableHeader = [];
         if (type === "tool") {
-            tableHeader = ["inputCheckbox", "Tool Name", "Available Quantity", "Required Quantity", "Cost"];
+            tableHeader = ["inputCheckbox", "Tool Name", "Available Quantity", "Cost", "Required Quantity"];
             return (
                 <TableHeader
                     headerObj={tableHeader}
@@ -206,10 +232,10 @@ class ConfigureOperation extends Component {
         }
     };
     createToolList = () => (
-        this.state.toolList.filter(item => item.itemName.toLowerCase().includes(this.state.searchValue)).map(this.createToolRow)
+        this.state.toolList.filter(item => item.itemName.toLowerCase().includes(this.state.toolSearchValue)).map(this.createToolRow)
     );
     createWorkerList = () => (
-        this.state.workerList.filter(item => item.name.toLowerCase().includes(this.state.searchValue)).map(this.createWorkerCheckbox)
+        this.state.workerList.filter(item => item.name.toLowerCase().includes(this.state.workerSearchValue)).map(this.createWorkerCheckbox)
     );
     saveConfigOperation(e) {
         var selectedObj = {};
@@ -218,35 +244,118 @@ class ConfigureOperation extends Component {
         selectedObj['totalCost'] = this.state.totalCost;
         this.props.popupClose(selectedObj);
     };
-
+    selectTab(key) {
+        this.setState({
+            tabActiveKey: key
+        });
+    };
+    handleToolSearchChange(e) {
+        this.setState({
+            toolSearchValue: e.target.value.toLowerCase()
+        });
+    }
+    handleWorkerSearchChange(e) {
+        this.setState({
+            workerSearchValue: e.target.value.toLowerCase()
+        });
+    }
     render() {
         return (
             <React.Fragment>
-                
-                {this.props.showTools && <div>
+
+
+        <Tabs
+          id="controlled-tab-example"
+          activeKey={this.state.tabActiveKey} onSelect={this.selectTab.bind(this)} >
+   
+          <Tab eventKey="tools" title="Tools">
+            
+
+          {this.props.showTools && <div>
                     <span className="underline blue">Add Tools</span>
-                    <Table responsive="sm">
+
+                    <div className="has-search mt-2">
+                        <span className="fa fa-search form-control-feedback"></span>
+                        <input type="text" className="form-control search-box" placeholder="Search Tools..." onChange={this.handleToolSearchChange.bind(this)} />
+                    </div>
+
+
+                    <Table responsive="sm" className="conf-table">
                         <tbody>
+
+
+                        <InfiniteScroll
+                pageStart={0}
+                loadMore={this.getAllTools.bind(this)}
+                hasMore={this.state.hasMoreTools}
+                loader={<div className="loader" key={0}>Loading ...</div>}
+                useWindow={false}
+            >
+
                             {this.createTableHeader("tool")}
                             {this.createToolList()}
+
+
+                </InfiniteScroll>
+
                         </tbody>
                     </Table>
                     </div>
                 }
-                {this.props.showWorkers && 
+
+
+          </Tab>
+          <Tab eventKey="workers" title="Workers">
+            
+            
+          {this.props.showWorkers && 
                 <div>
                     <span className="underline blue">Add Worker</span>
-
-                    <Table responsive="sm">
+                    <div className="has-search mt-2">
+                        <span className="fa fa-search form-control-feedback"></span>
+                        <input type="text" className="form-control search-box" placeholder="Search Workers..." onChange={this.handleWorkerSearchChange.bind(this)} />
+                    </div>
+                    <Table responsive="sm" className="conf-table">
                         <tbody>
+
+                        <InfiniteScroll
+                pageStart={0}
+                loadMore={this.getAllWorkers.bind(this)}
+                hasMore={this.state.hasMoreWorkers}
+                loader={<div className="loader" key={0}>Loading ...</div>}
+                useWindow={false}
+            >
+
+
                             {this.createTableHeader("worker")}
                             {this.createWorkerList()}
+
+
+                            </InfiniteScroll>
+
+
                         </tbody>
                     </Table>
 
                 </div>
                 }
+
+          </Tab>
+       
+        </Tabs>
+
+
+
+
+
+                
+                
                 <button onClick={this.saveConfigOperation.bind(this)} className="btn btn-success btn-sm" > Save </button>
+
+
+
+
+
 
                 {this.state.showAlert && < MyAlert alertConfig = {this.state.alertConfig} showAlert={this.state.showAlert} /> }
 

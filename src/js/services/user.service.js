@@ -4,10 +4,10 @@ const API_URL = "https://funetus-api.herokuapp.com/";
 
 class UserService {
 
-    getAllQuotes() {
+    getAllQuotes(pageNo) {
         var config = {
             method: 'get',
-            url: API_URL + 'quotes'
+            url: API_URL + 'quotes' +'?page='+pageNo
         };
 
         return axios(config)
@@ -18,6 +18,7 @@ class UserService {
                 console.log(error);
             });
     }
+
     getSingleQuote(quoteId) {
         var config = {
             method: 'get',
@@ -89,6 +90,37 @@ class UserService {
         return axios(config)
             .then(function (response) {
                 console.log(response);
+                return response;
+            })
+            .catch(function (error) {
+                console.log(error);
+            });
+    }
+
+    getSingleCustomer() {
+        var config = {
+            method: 'get',
+            url: API_URL + 'user'
+        };
+
+        return axios(config)
+            .then(function (response) {
+                return response;
+            })
+            .catch(function (error) {
+                console.log(error);
+            });
+    }
+
+    updateUserProfile(data) {
+        var config = {
+            method: 'put',
+            url: API_URL + 'user',
+            data: data
+        };
+
+        return axios(config)
+            .then(function (response) {
                 return response;
             })
             .catch(function (error) {

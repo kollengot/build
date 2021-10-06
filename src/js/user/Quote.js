@@ -4,6 +4,8 @@ import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import UserService from "../services/user.service";
 
+import MyAlert from "../components/MyAlert";
+
 const today = new Date();
 class UserQuote extends Component {
 
@@ -11,9 +13,13 @@ class UserQuote extends Component {
         super(props);
         this.state = {
             item: {},
-            measuresObjId: 1
+            measuresObjId: 1,
+            showAlert: false,
+            alertConfig: {
+                "variant": "danger"
+            }
         }
-        this.state.item['measures']= [
+        this.state.item['measures'] = [
             {
                 "id": this.state.measuresObjId,
                 "name": "",
@@ -24,20 +30,55 @@ class UserQuote extends Component {
     }
 
     resetQuote() {
-        this.setState({ 
+        this.setState({
             item: {},
             measuresObjId: 1
-         });
-         var obj = this.state.item;
-         obj['measures']= [];
-        this.setState({item:obj});
+        });
+        var obj = this.state.item;
+        obj['measures'] = [];
+        this.setState({ item: obj });
     }
+
+
+
+    formValidation(event) {
+        let errors = '';
+        if (!this.state.item.title) {
+            errors += 'Title';
+        }
+        if (!this.state.item.desc) {
+            errors += ' Description';
+        }
+        if (!this.state.item.startDate) {
+            errors += ' Start date';
+        }
+        if (!this.state.item.endDate) {
+            errors += ' End date';
+        }
+
+        if (errors !== '') {
+            this.setState(prevState => ({
+                alertConfig: {
+                    ...prevState.alertConfig,
+                    message: errors + ' are required!'
+                },
+                showAlert: true
+            }));
+        } else {
+            this.sendQuoteReq();
+        }
+
+    }
+
 
     sendQuoteReq() {
 
-        let newMeasuresArray = this.state.item.measures.map(function(item) { 
-            delete item.id; 
-            return item; 
+
+
+
+        let newMeasuresArray = this.state.item.measures.map(function (item) {
+            delete item.id;
+            return item;
         });
 
         var data = {
@@ -46,8 +87,8 @@ class UserQuote extends Component {
             "status": "NEW",
             "startDate": this.state.item.startDate,
             "endDate": this.state.item.endDate,
-            "measures": newMeasuresArray,
-            "uploads": this.state.item.uploads
+            "Measures": newMeasuresArray,
+            "Uploads": this.state.item.uploads
         };
         UserService.createQuote(data).then(
             response => {
@@ -62,7 +103,7 @@ class UserQuote extends Component {
 
     handleFileInput(e) {
         const file = e.target.files[0];
-        if(file) {
+        if (file) {
             const config = {
                 bucketName: 'fuentes-fileupload',
                 dirName: 'quote-attachments',
@@ -72,7 +113,7 @@ class UserQuote extends Component {
             }
             const ReactS3Client = new S3(config);
             const newFileName = file.name;
-    
+
             ReactS3Client
                 .uploadFile(file, newFileName)
                 .then(data => {
@@ -82,18 +123,18 @@ class UserQuote extends Component {
                     };
                     var obj = this.state.item;
 
-                    if(obj.uploads) {
+                    if (obj.uploads) {
                         obj['uploads'].push(newUploads);
                     } else {
                         obj['uploads'] = [];
                         obj['uploads'].push(newUploads);
                     }
-                    this.setState({item:obj});
+                    this.setState({ item: obj });
 
                 })
                 .catch(err => console.error(err))
-            
-        }   
+
+        }
     }
 
     handleFormChange(propertyName, event) {
@@ -106,16 +147,16 @@ class UserQuote extends Component {
         item[propertyName] = new Date(event);
         this.setState({ item: item });
     }
-    handleMeasureChange(id,propertyName,event){
-        var tmpObj  = this.state.item;
+    handleMeasureChange(id, propertyName, event) {
+        var tmpObj = this.state.item;
         tmpObj.measures.find(o => o.id == id)[propertyName] = event.target.value;
-        this.setState({item: tmpObj});
+        this.setState({ item: tmpObj });
     }
 
     addMeasuresClick() {
         let tmpObj = this.state.item;
         let tmpId = this.state.measuresObjId + 1;
-        this.setState({measuresObjId: tmpId});
+        this.setState({ measuresObjId: tmpId });
 
         let measuresObj = {
             "id": tmpId,
@@ -124,12 +165,12 @@ class UserQuote extends Component {
             "qty": ""
         };
         tmpObj.measures = [...tmpObj.measures, measuresObj];
-        this.setState({item: tmpObj});
+        this.setState({ item: tmpObj });
     }
-    handleRemoveClick(id,event) {
-        var tmpObj  = this.state.item;
+    handleRemoveClick(id, event) {
+        var tmpObj = this.state.item;
         tmpObj.measures = this.state.item.measures.filter(o => o.id != id);
-        this.setState({item: tmpObj});   
+        this.setState({ item: tmpObj });
     }
 
 
@@ -143,7 +184,7 @@ class UserQuote extends Component {
                     </div>
                     <div className="col text-right">
                         <button type="button" className="btn btn-blue btn-sm pr-4 pl-4" onClick={() => this.resetQuote()} >Reset</button>
-                        <button type="button" className="btn btn-green btn-sm ml-2 pr-4 pl-4" onClick={() => this.sendQuoteReq()}>Send</button>
+                        <button type="button" className="btn btn-green btn-sm ml-2 pr-4 pl-4" onClick={() => this.formValidation()}>Send</button>
                     </div>
                 </div>
                 <div className="blue-box-div" id="create-quote-form">
@@ -191,53 +232,53 @@ class UserQuote extends Component {
                     <div className="form-group">
                         <label>Measurements</label>
                         <button className="btn add-btn" onClick={() => this.addMeasuresClick()}></button>
-                       
-                        {this.state.item.measures.length > 0 && 
-                        <div className="row">
-                            <div className="col">
-                                <label>Name</label>
+
+                        {this.state.item.measures.length > 0 &&
+                            <div className="row">
+                                <div className="col">
+                                    <label>Name</label>
+                                </div>
+                                <div className="col">
+                                    <label>Unit</label>
+                                </div>
+                                <div className="col">
+                                    <label>Quantity</label>
+                                </div>
+                                <div className="col">
+                                    <label></label>
+                                </div>
                             </div>
-                            <div className="col">
-                            <label>Unit</label>
-                            </div>
-                            <div className="col">
-                            <label>Quantity</label>
-                            </div>
-                            <div className="col">
-                            <label></label>
-                            </div>
-                        </div>
                         }
 
                         {this.state.item.measures && this.state.item.measures.map((item) => {
-                            return(
-                            <div className="row pb-2" key={item.id}>
-                               <div className="col">
-                                <input type="text" className="form-control"
-                                        defaultValue={item.name}
-                                        onChange={this.handleMeasureChange.bind(this, item.id, 'name')}
-                                    />
-                               </div>
-                               <div className="col">
-                                
-                                    <input type="text" className="form-control"
-                                        defaultValue={item.unit}
-                                        onChange={this.handleMeasureChange.bind(this, item.id, 'unit')}
-                                    />
-                               </div>
-                               <div className="col">
-                                
-                                    <input type="number" className="form-control"
-                                        defaultValue={item.qty}
-                                        onChange={this.handleMeasureChange.bind(this, item.id, 'qty')}
-                                    />
-                               </div>
-                               <div className="col">
-                               <button
-                                className="btn measure-delete-btn "
-                                onClick={this.handleRemoveClick.bind(this,item.id)}></button>
-                               </div>
-                            </div>
+                            return (
+                                <div className="row pb-2" key={item.id}>
+                                    <div className="col">
+                                        <input type="text" className="form-control" 
+                                            defaultValue={item.name}
+                                            onChange={this.handleMeasureChange.bind(this, item.id, 'name')}
+                                        />
+                                    </div>
+                                    <div className="col">
+
+                                        <input type="text" className="form-control" autoComplete={'' + Math.random()}
+                                            defaultValue={item.unit}
+                                            onChange={this.handleMeasureChange.bind(this, item.id, 'unit')}
+                                        />
+                                    </div>
+                                    <div className="col">
+
+                                        <input type="number" className="form-control"
+                                            defaultValue={item.qty} min="1" 
+                                            onChange={this.handleMeasureChange.bind(this, item.id, 'qty')}
+                                        />
+                                    </div>
+                                    <div className="col">
+                                        <button
+                                            className="btn measure-delete-btn "
+                                            onClick={this.handleRemoveClick.bind(this, item.id)}></button>
+                                    </div>
+                                </div>
                             )
 
                         })
@@ -248,12 +289,11 @@ class UserQuote extends Component {
                     <div>
                         <label>Attachments</label>
                         <label className="btn btn-blue btn-sm pr-4 pl-4 ml-2">
-                            Browse <input type="file" hidden onChange={this.handleFileInput.bind(this)}/>
+                            Browse <input type="file" hidden onChange={this.handleFileInput.bind(this)} />
                         </label>
                     </div>
+                    {this.state.showAlert && < MyAlert alertConfig={this.state.alertConfig} />}
                 </div>
-
-
 
             </div>
         );

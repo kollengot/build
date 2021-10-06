@@ -25,11 +25,23 @@ class Popup extends React.Component {
       case 'operationList':
         return <OperationList popupClose={this.callback}></OperationList>;
       case 'image':
-        return <img src={this.props.popupConfig.body} className='img-thumbnail' alt='...'></img> ;
+        return <div class="container"> 
+        <iframe class="responsive-iframe"  src={this.props.popupConfig.body}  height="1000" width="1000"></iframe>
+      </div>;
       case 'profile':
           return <Profiile></Profiile> ;
         default:
         return this.props.popupConfig.body;
+    }
+  };
+  getClassName() {
+    switch(this.props.popupConfig.type) {
+      case 'configureOperation':
+        return 'confCntr';
+      case 'image':
+        return 'imgCntr';
+      default:
+        return '';
     }
   };
 
@@ -40,11 +52,11 @@ class Popup extends React.Component {
       button = <Button color="success" onClick={this.props.parentConfirmCallback}>Confirm Delete</Button>;
     } 
     return (
-      <Modal show={this.props.openFlag} onHide={this.props.parentCloseCallback}>
+      <Modal show={this.props.openFlag} onHide={this.props.parentCloseCallback}  className={this.getClassName()}>
         <Modal.Header closeButton>
           <Modal.Title>{this.props.popupConfig.header}</Modal.Title>
         </Modal.Header>
-        <Modal.Body>
+        <Modal.Body >
         { this.renderPopupBody() }
         </Modal.Body>
         <Modal.Footer>

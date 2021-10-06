@@ -27,10 +27,10 @@ axios.interceptors.response.use((response) => {
 
 class AdminService {
 
-    getAllQuotes() {
+    getAllQuotes(pageNo) {
         var config = {
             method: 'get',
-            url: API_URL + 'quotes'
+            url: API_URL + 'quotes' +'?page='+pageNo
         };
 
         return axios(config)
@@ -104,10 +104,10 @@ class AdminService {
             });
     }
 
-    getAllWorkers() {
+    getAllWorkers(pageNo) {
         var config = {
             method: 'get',
-            url: API_URL + 'workers'
+            url: API_URL + 'workers?page='+pageNo
         };
 
         return axios(config)
@@ -237,11 +237,10 @@ class AdminService {
                 console.log(error);
             });
     }
-
-    getAllInventory() {
+    getAllInventory(pageNo) {
         var config = {
             method: 'get',
-            url: API_URL + 'inventory'
+            url: API_URL + 'inventory' +'?page='+pageNo
         };
 
         return axios(config)
@@ -314,6 +313,20 @@ class AdminService {
     deleteProject(id) {
         var config = {
             method: 'DELETE',
+            url: API_URL + 'project/' + id
+        };
+
+        return axios(config)
+            .then(function (response) {
+                return response;
+            })
+            .catch(function (error) {
+                console.log(error);
+            });
+    }
+    getSingleProject(id) {
+        var config = {
+            method: 'get',
             url: API_URL + 'project/' + id
         };
 
@@ -453,6 +466,21 @@ class AdminService {
         var config = {
             method: 'post',
             url: API_URL + 'project/changeStatus/'+ id,
+            data: data
+        };
+        return axios(config)
+            .then(function (response) {
+                console.log(response);
+                return response;
+            })
+            .catch(function (error) {
+                console.log(error);
+            });
+    }
+    convertToProject(id, data) {
+        var config = {
+            method: 'put',
+            url: API_URL + 'quotes/convertToProject/'+ id,
             data: data
         };
         return axios(config)

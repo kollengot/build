@@ -1,18 +1,21 @@
 import React, { Component } from 'react';
+import InfiniteScroll from 'react-infinite-scroller';
 import UserService from "../services/user.service";
 
 class QuoteList extends Component {
     constructor(props) {
         super(props);
         this.handleChange = this.handleChange.bind(this);
-        this.getAllQuotes();
+        //this.getAllQuotes();
     }
     
 
     state = {
         activeId : 0,
         searchValue: "",
-        listitems: []
+        listitems: [],
+        hasMoreItems: true,
+        pageNo: 0
 
     }
 
@@ -24,11 +27,18 @@ class QuoteList extends Component {
     }
 
     getAllQuotes() {
-        UserService.getAllQuotes().then(
+        UserService.getAllQuotes(this.state.pageNo).then(
             response => {
+                var tmpListitems = [...this.state.listitems, ...response.data.rows];
                 this.setState({
-                    listitems: response.data.rows
+                    listitems: tmpListitems,
+                    pageNo: this.state.pageNo+1
                 });
+                if(this.state.pageNo >= response.data.currentPage) {
+                    this.setState({
+                        hasMoreItems: false
+                    });
+                }
             },
             error => {
                 console.log("Error");
@@ -60,7 +70,18 @@ class QuoteList extends Component {
                     </div>
                 </div>
 
-                <div className="list-group">
+                <div className="list-group" style={{maxHeight: (window.innerHeight - 200) + 'px'}}>
+
+
+
+                <InfiniteScroll
+                pageStart={0}
+                loadMore={this.getAllQuotes.bind(this)}
+                hasMore={this.state.hasMoreItems}
+                loader={<div className="loader" key={0}>Loading ...</div>}
+                useWindow={false}
+            >
+
 
                     {this.state.listitems && this.state.listitems.filter(item =>
                         item.title.toLowerCase().includes(this.state.searchValue)).map(listitem => (
@@ -100,6 +121,8 @@ class QuoteList extends Component {
                             </a>
 
                         ))}
+
+</InfiniteScroll>
 
                 </div>
 

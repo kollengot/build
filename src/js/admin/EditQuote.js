@@ -25,7 +25,8 @@ class QuoteReqUpdate extends Component {
     isPopupOpen: false,
     selectedOperationId: 0,
     configOpId: 0,
-    totalCost: 0
+    totalCost: 0,
+    taxCheckboxChecked: false
   }
   constructor(props) {
     super(props);
@@ -168,14 +169,46 @@ class QuoteReqUpdate extends Component {
       }
     );
   }
-  changeQuoteStatus(status) {
+  rejectQuote() {
+
+    this.setState({
+      isPopupOpen: true,
+      popupConfig: {
+        header: "Reject Quote",
+        body: '',
+        type: "rejectQuote"
+      }
+    });
+  }
+  changeQuoteToProject() {
+    var data = {
+      "name":this.state.selectedItem.title,
+      "desc":this.state.selectedItem.desc,
+      "startDate":this.state.selectedItem.endDate,
+      "endDate":this.state.selectedItem.startDate
+  };
+    AdminService.convertToProject(this.state.selectedItem.id, data).then(
+      response => {
+        if(response.data) 
+          this.showPopupMessage(response.data.message);
+      },
+      error => {
+        console.log("Error");
+      }
+    );
+  }
+
+  changeQuoteStatus(status,reasonTxt) {
     var data = {
       "status": status
     };
+    if(status === "QUOTE_REJECTED") {
+      data.reason = reasonTxt
+    }
     AdminService.changeStatus(this.state.selectedItem.id, data).then(
       response => {
-        console.log(response);
-        this.showPopupMessage(response.msg);
+        if(response.data) 
+          this.showPopupMessage(response.data.message);
       },
       error => {
         console.log("Error");
@@ -198,7 +231,6 @@ class QuoteReqUpdate extends Component {
     this.props.parentCallback();
   }
   deleteOperation(opId,opName,event) {
-debugger;
     this.setState({
       deleteOpId: opId,
       isPopupOpen: true,
@@ -219,13 +251,16 @@ debugger;
     console.log(e);
   }
 
+  onDeleteRowClick = event => {
+    console.log(event.target.name);
+  }
+
 
 
 
   handleReqAvailChange = event => {
     let { value, min, max } = event.target;
     value = Math.max(Number(min), Math.min(Number(max), Number(value)));
-    alert(value);
     this.setState({ value });
   }
 
@@ -279,21 +314,34 @@ debugger;
 
   };
 
-  handleModalYes = () => {
-
+  handleModalYes = (data) => {
+    
     this.setState({
       isPopupOpen: false
     });
 
 
-    var tempList = this.state.selectedItem.QuoteOperation.filter(item => item.Operations.id !== this.state.deleteOpId);
-    var tmpSelectedItem = this.state.selectedItem;
-    tmpSelectedItem.QuoteOperation = tempList;
-    this.setState({
-      selectedItem: tmpSelectedItem
-    });
+  if(this.state.popupConfig.type === "rejectQuote")
+  {
+    this.changeQuoteStatus("QUOTE_ADMIN_REJECTED", data);
+  }
+   
+else {
+  var tempList = this.state.selectedItem.QuoteOperation.filter(item => item.Operations.id !== this.state.deleteOpId);
+  var tmpSelectedItem = this.state.selectedItem;
+  tmpSelectedItem.QuoteOperation = tempList;
+  this.setState({
+    selectedItem: tmpSelectedItem
+  });
+}
 
 
+
+
+
+    
+
+ 
 
     /*
     AdminService.deleteQuote(this.state.selectedItem.id).then(
@@ -354,6 +402,8 @@ debugger;
               type="tool"
               listItem={tool.Inventories}
               reqQty={tool.req_quantity}
+              deleteBtn = {true}
+              onDeleteRowClick = {this.onDeleteRowClick}
             />);
           })
           }
@@ -376,6 +426,8 @@ debugger;
               type="worker"
               listItem={item.Workers}
               reqQty={item.total_hrs_req}
+              deleteBtn = {true}
+              onDeleteRowClick = {this.onDeleteRowClick}
             />);
           })
           }
@@ -386,11 +438,19 @@ debugger;
   }
   getCost() {
     if (this.state.selectedItem.QuoteOperation) {
-      return (this.state.selectedItem.QuoteOperation.reduce((a, v) => a = a + v.operation_cost, 0));
+      var totalCost = (this.state.selectedItem.QuoteOperation.reduce((a, v) => a = a + v.operation_cost, 0));
+      if(this.state.taxCheckboxChecked) {
+        totalCost = totalCost + totalCost* (5/100);
+      }
+      return totalCost;
     } else {
       return (0);
     }
 
+  };
+
+  handleTaxChange(evt) {
+    this.setState({ taxCheckboxChecked: evt.target.checked });
   };
 
   renderMeasureTable() {
@@ -429,6 +489,41 @@ debugger;
       }
     </div>);
   }
+  removeUploadedImage(file) {
+
+/*
+    const config = {
+        bucketName: 'fuentes-fileupload',
+        dirName: 'quote-attachments',
+        region: 'us-west-1',
+        accessKeyId: 'AKIA5ARA5MYMNVC47U6F',
+        secretAccessKey: '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'
+    }
+   
+   
+    const ReactS3Client = new S3(config);
+
+    const filename = file.fileName;
+
+    ReactS3Client
+        .deleteFile(filename)
+        .then(response => console.log(response))
+        .catch(err => console.error(err))
+
+
+*/
+
+}
+  showUploadImage(filePath) {
+    this.setState({
+        isPopupOpen: true,
+        popupConfig: {
+            header: "Uploaded Data",
+            body: filePath,
+            type: "image"
+        }
+    });
+}
 
   render() {
 
@@ -464,8 +559,8 @@ debugger;
           
 
             {headerBtn(this.state.selectedItem.status) > 4 ? ( <div className="col-8 text-right">
-                  <button type="button" className="btn btn-blue btn-sm pr-4 pl-4" onClick={() => this.changeQuoteStatus("QUOTE_REJECTED")} >Reject</button>
-                  <button type="button" className="btn btn-green btn-sm ml-2 pr-4 pl-4" onClick={() => this.changeQuoteStatus("PROJECT_IN_PROGRESS")}>Accept Purchase Order</button>
+                  <button type="button" className="btn btn-blue btn-sm pr-4 pl-4" onClick={() => this.rejectQuote()} >Reject</button>
+                  <button type="button" className="btn btn-green btn-sm ml-2 pr-4 pl-4" onClick={() => this.changeQuoteToProject()}>Accept Purchase Order</button>
                 </div>) : (<div className="col-8 text-right">
                   <button type="button" className="btn btn-blue btn-sm pr-4 pl-4" onClick={() => this.resetReq()} >Reset</button>
                   <button type="button" className="btn btn-info btn-sm ml-2 pr-4 pl-4" onClick={() => this.saveQuoteUpdate()}>Save</button>
@@ -499,7 +594,16 @@ debugger;
                 </div>
                 <div className="quote-data-div">
                   <span className="underline half blue">Attachments</span>
-                  <p className="green-text-color">{uploads && uploads.length}</p>
+
+                  {uploads && uploads.map((item, index) => {
+                                return (
+                                    <div className="">
+                                        <button className="btn btn-link p-0" onClick={() => this.showUploadImage(item.filePath)}>{item.fileName}</button>
+                                       
+                                    </div>
+                                )
+                            })
+                            }
 
                 </div>
                 {this.state.selectedItem.Measures &&
@@ -509,42 +613,19 @@ debugger;
 
 
               {this.state.selectedItem.status === "PROJECT_IN_PROGRESS" || this.state.selectedItem.status === "QUOTE_PO_SUBMIT" ?
-                <div className="col">
-                  <div className="row">
-                    <div className="purchase-order d-inline-block form-group col">
-                      <span className="underline blue mb-2">Order details</span>
-                      <div className="row ml-2">
-                        <div className="col-md-8">Operation Cost</div>
-                        <div className="col-md-2">2</div>
-                        <div className="col-md-8">Inspection Amount</div>
-                        <div className="col-md-2">1</div>
-                        <div className="col-md-8">Sub Total</div>
-                        <div className="col-md-2">3</div>
-                        <div className="col-md-8">Total tax</div>
-                        <div className="col-md-2">5%</div>
-                        <div className="col-md-8"></div>
-                        <div className="col-md-2"></div>
-                        <div className="col-md-8">Total Cost</div>
-                        <div className="col-md-2">8</div>
-                      </div>
-
-                    </div>
-
-                    <div className="col">
+                
+                 <div className="col">
                       <span className="underline blue mb-2">Purchase Order</span>
-                      <img src={this.state.selectedItem.submittedPO} className='img-thumbnail' alt='...'></img>
+                      <img src={this.state.selectedItem.submittedPO} className='po-img' alt='...'></img>
 
                     </div>
 
-                  </div>
 
-
-                </div>
                 :
 
                 (<div className="col quote-measurements">
                   <div className="row">
-                    <div className="col">
+                    <div className="col-2">
                       <span className="underline blue">Make a Quote</span>
                     </div>
                     <div className="col text-right">
@@ -564,8 +645,9 @@ debugger;
                           <option key={item.id} value={item.id}>{item.name}</option>
                         ))}
                       </select>
-
-                      <span className="blue">Total Cost</span>
+                      
+                      Apply Tax <input type="checkbox" onChange={this.handleTaxChange.bind(this)}></input> 
+                      <span className="blue ml-4">Total Cost</span>
                       <span className="badge btn-blue p-2 ml-2">{this.getCost()}</span>
                     </div>
                   </div>

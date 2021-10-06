@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import InfiniteScroll from 'react-infinite-scroller';
 import Popup from "../components/Popup";
 import { validationMessages } from '../common/Constants';
 import EditWorker from './EditWorker';
@@ -11,19 +12,25 @@ class ManageWorker extends Component {
         selectedItem: [],
         editWorkerPage: false,
         popupConfig: {},
-        isPopupOpen: false
-    }
-    constructor(props) {
-        super(props);
-        this.getAllWorkerList();
+        isPopupOpen: false,
+        hasMoreItems: true,
+        pageNo: 0
     }
     getAllWorkerList() {
-        AdminService.getAllWorkers().then(
+        AdminService.getAllWorkers(this.state.pageNo).then(
             response => {
                 if(response) {
+                    var tmpListitems = [...this.state.listitems, ...response.data.rows];
                     this.setState({
-                        listitems: response.data.rows
+                        listitems: tmpListitems,
+                        pageNo: this.state.pageNo+1
                     });
+
+                    if(this.state.pageNo >= response.data.currentPage) {
+                        this.setState({
+                            hasMoreItems: false
+                        });
+                    }
                 } 
             },
             error => {
@@ -107,8 +114,11 @@ class ManageWorker extends Component {
             }
         });
     }
-    parentCallback = (message) => {
-        if(message) this.showPopup(message);
+    parentCallback = (response) => {
+        if(response && response.data.message){
+            this.showPopup(response.data.message);
+            this.getAllWorkerList();
+        } 
         this.setState({
             editWorkerPage: false
         });
@@ -154,7 +164,15 @@ class ManageWorker extends Component {
                         <label>Created On</label>
                     </div>
                 </div>
-                <div className="quote-req-table">
+                <div className="quote-req-table" style={{maxHeight: (window.innerHeight - 200) + 'px'}}>
+
+                <InfiniteScroll
+                pageStart={0}
+                loadMore={this.getAllWorkerList.bind(this)}
+                hasMore={this.state.hasMoreItems}
+                loader={<div className="loader" key={0}>Loading ...</div>}
+                useWindow={false} >
+
                     {this.state.listitems.filter(item =>
                         item.name && item.name.toLowerCase().includes(this.state.searchValue)).map(listitem => (
 
@@ -199,6 +217,7 @@ class ManageWorker extends Component {
 
                             </div>
                         ))}
+                         </InfiniteScroll>
                 </div>
             </div>
         </div>);

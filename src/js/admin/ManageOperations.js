@@ -107,13 +107,26 @@ class ManageOperations extends Component {
             selectedItem: selectedItem
         });
     }
-    parentCallback = () => {
+    showPopup(message){
         this.setState({
+            isPopupOpen: true,
+            popupConfig : {
+                header: "Message",
+                body:message,
+                type: "message"
+            }
+        });
+    }
+    parentCallback = (response) => {
+        if(response && response.data.message){
+            this.showPopup(response.data.message);
+            this.getAllOperationList();
+        } 
+        this.setState({
+            editOperationPage: false,
             selectedItem: []
         });
-        this.setState({
-            editOperationPage:false
-          });
+
     }
     renderOperationsList() {
         return(

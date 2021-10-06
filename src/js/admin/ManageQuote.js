@@ -1,4 +1,5 @@
-import React, { Component } from 'react';
+import React, { Component, useEffect} from 'react';
+import InfiniteScroll from 'react-infinite-scroller';
 
 
 import AdminService from "../services/admin.service";
@@ -16,27 +17,41 @@ class ManageQuote extends Component {
         listitems: [],
         updateQuotePage: false,
         popupConfig: {},
-        isPopupOpen: false
+        isPopupOpen: false,
+        hasMoreItems: true,
+        pageNo: 0
     }
     constructor(props) {
         super(props);
-        this.getAllQuotes();
     }
+
+
+    
+      
     render() {
         return (
             <React.Fragment>
-                <Popup popupConfig = {this.state.popupConfig} openFlag = {this.state.isPopupOpen} parentCloseCallback={this.handleClose.bind(this)} parentConfirmCallback = {this.handleModalYes.bind(this)}></Popup>
+                <Popup popupConfig = {this.state.popupConfig} openFlag = {this.state.isPopupOpen} parentCloseCallback={this.handleClose.bind(this)} parentConfirmCallback = {this.handleModalYes}></Popup>
                 {this.state.updateQuotePage ? <EditQuote selectedQuoteId= {this.state.selectedItem.id} parentCallback= {this.parentCallback}/> : this.renderQuoteList() }
             </React.Fragment>
         );
     }
     getAllQuotes() {
-        AdminService.getAllQuotes().then(
+        AdminService.getAllQuotes(this.state.pageNo).then(
             response => {
                 if(response){
+                    //var tmpListitems = this.state.listitems.concat(response.data.rows);
+                    var tmpListitems = [...this.state.listitems, ...response.data.rows];
                     this.setState({
-                        listitems: response.data.rows
+                        listitems: tmpListitems,
+                        pageNo: this.state.pageNo+1
                     });
+
+                    if(this.state.pageNo >= response.data.currentPage) {
+                        this.setState({
+                            hasMoreItems: false
+                        });
+                    }
                 }
             },
             error => {
@@ -119,9 +134,12 @@ class ManageQuote extends Component {
             updateQuotePage: false
         });
     }
-
+    
     renderQuoteList() {
-        return (<div className="col admin-list-page">
+        return (
+
+        
+        <div className="col admin-list-page">
             <div className="list-group-header section-header row">
                 <div className="col-4">
                     <span className="mb-1 underline">Quote</span>
@@ -158,8 +176,20 @@ class ManageQuote extends Component {
                         <label>Attachments</label>
                     </div>
                 </div>
-                <div className="quote-req-table">
-                    {this.state.listitems && this.state.listitems.filter(item =>
+                <div className="quote-req-table" style={{maxHeight: (window.innerHeight - 200) + 'px'}}>
+
+                <InfiniteScroll
+                pageStart={0}
+                loadMore={this.getAllQuotes.bind(this)}
+                hasMore={this.state.hasMoreItems}
+                loader={<div className="loader" key={0}>Loading ...</div>}
+                useWindow={false}
+            >
+               
+
+
+
+               {this.state.listitems && this.state.listitems.filter(item =>
                         item.title.toLowerCase().includes(this.state.searchValue)).map(item => (
                             <div className="row mt-1" key={item.id}>
                                 <div className="col-4" >
@@ -188,6 +218,24 @@ class ManageQuote extends Component {
                                 </div>
                             </div>
                         ))}
+
+
+
+
+
+
+            </InfiniteScroll>
+
+
+                    
+
+
+
+
+
+
+
+
                 </div>
             </div>
         </div>);

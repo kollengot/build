@@ -1,6 +1,6 @@
 import React from "react";
 
-const TableRow = ({ type, listItem, reqQty, isSelected, onreqQntyChange, onCheckboxChange }) => {
+const TableRow = ({ type, listItem, reqQty,deleteBtn, isSelected, onreqQntyChange, onCheckboxChange, onDeleteRowClick }) => {
 
   switch (type) {
     case 'tool':
@@ -16,6 +16,7 @@ const TableRow = ({ type, listItem, reqQty, isSelected, onreqQntyChange, onCheck
         <td key="1" >{listItem.itemName}</td>
         <td key="2">{listItem.availability}</td>
         <td key="3">{listItem.cost}</td>
+       
         <td key="4" >
           <input
             type="number"
@@ -25,10 +26,14 @@ const TableRow = ({ type, listItem, reqQty, isSelected, onreqQntyChange, onCheck
           />
         </td>
 
+        
+
+        {deleteBtn && <td key="5"><button name={listItem.id} className="btn delete-btn float-right mr-5" onClick={onDeleteRowClick}></button></td>}
+
       </tr>);
     case 'worker':
       return (<tr key="workerRow">
-        <td key="5">
+        <td key="6">
           <input
             type="checkbox"
             name={listItem.id}
@@ -36,10 +41,10 @@ const TableRow = ({ type, listItem, reqQty, isSelected, onreqQntyChange, onCheck
             onChange={onCheckboxChange}
           />
         </td>
-        <td key="6">{listItem.name}</td>
-        <td key="7">{listItem.avail_per_day}</td>
-        <td key="8">{listItem.cost_per_hr}</td>
-        <td key="9" >
+        <td key="7">{listItem.name}</td>
+        <td key="8">{listItem.avail_per_day}</td>
+        <td key="9">{listItem.cost_per_hr}</td>
+        <td key="10" >
           <input
             type="number"
             name={listItem.id}
@@ -47,6 +52,7 @@ const TableRow = ({ type, listItem, reqQty, isSelected, onreqQntyChange, onCheck
             onChange={onreqQntyChange}
           />
         </td>
+        {deleteBtn &&  <td key="11"><button className="btn delete-btn float-right mr-5" onClick={onDeleteRowClick} ></button></td>}
       </tr>);
     default:
       return;

@@ -4,11 +4,13 @@ import Dropdown from 'react-bootstrap/Dropdown';
 import { Button, ButtonGroup } from 'reactstrap';
 import LogoImage from '../../images/Logo.png';
 import Popup from "../components/Popup";
+import {usersTag}  from "../common/Constants";
 
 class Header extends Component {
     state = {
         popupConfig: {},
-        isPopupOpen: false
+        isPopupOpen: false,
+        user: JSON.parse(localStorage.getItem('user'))   
     }
     constructor(props) {
         super(props);
@@ -18,6 +20,9 @@ class Header extends Component {
             isPopupOpen: false
         });
     }
+    clickToggle = () => {
+        alert("dsad");
+    }
     logOut() {
         localStorage.removeItem("user");
     }
@@ -25,7 +30,7 @@ class Header extends Component {
         this.setState({
             isPopupOpen: true,
             popupConfig: {
-                header: "Manage Profiile",
+                header: "Manage Profile",
                 body: "",
                 type: "profile"
             }
@@ -37,11 +42,13 @@ class Header extends Component {
                 <div className="page-header sticky-top">
                     <img className="logo-header" alt="Logo" src={LogoImage} />
                     <div className="float-right">
+
                         <Dropdown as={ButtonGroup}>
-                            <Button >{JSON.parse(localStorage.getItem('user')).userName}</Button>
-                            <Dropdown.Toggle split variant="info" id="dropdown-split-basic" />
+                            <Button >{this.state.user.userName}</Button>
+                            <Dropdown.Toggle split variant="info" id="dropdown-split-basic"/>
                             <Dropdown.Menu>
-                                <Dropdown.Item onClick={() => this.showProfile()}>Profile</Dropdown.Item>
+                            {this.state.user.userId === usersTag.WORKER_TAG && <Dropdown.Item onClick={() => this.showProfile()}>Profile</Dropdown.Item>}
+                            {this.state.user.userId === usersTag.USER_TAG && <Dropdown.Item onClick={() => this.showProfile()}>Profile</Dropdown.Item>}   
                                 <Dropdown.Item href="/" onClick={() => this.logOut()}>Logout</Dropdown.Item>
                             </Dropdown.Menu>
                         </Dropdown>
