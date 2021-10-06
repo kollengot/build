@@ -104,10 +104,10 @@ class AdminService {
             });
     }
 
-    getAllWorkers() {
+    getAllWorkers(pageNo) {
         var config = {
             method: 'get',
-            url: API_URL + 'workers'
+            url: API_URL + 'workers?page='+pageNo
         };
 
         return axios(config)
@@ -237,11 +237,10 @@ class AdminService {
                 console.log(error);
             });
     }
-
-    getAllInventory() {
+    getAllInventory(pageNo) {
         var config = {
             method: 'get',
-            url: API_URL + 'inventory'
+            url: API_URL + 'inventory' +'?page='+pageNo
         };
 
         return axios(config)

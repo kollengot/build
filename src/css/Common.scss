@@ -301,6 +301,9 @@ p.ellipses_two {
 .imgCntr .modal-dialog{
   max-width: 95%;
 }
+.confCntr .modal-dialog, .confCntr  .modal-content {
+  width: max-content;
+}
 /*
 .modal-content {
   width:max-content;
@@ -613,4 +616,18 @@ input[type="number"] {
 .po-img {
   max-width: 60%;
 }
+.conf-table {
+  display: block;
+  max-height: 450px;
+  overflow: auto;
+}
 
+.btn.focus, .btn:focus {
+  outline: 0;
+  box-shadow: none;
+}
+.profile-form {
+  .input-group-text {
+    border-radius: 0;
+  }
+}

@@ -83,8 +83,7 @@ class EditCustomer extends Component {
             "name": this.state.item.name,
             "email": this.state.item.email,
             "phone": this.state.item.phone,
-            "address" : this.state.item.address,
-            "password": "cdsv3232"
+            "address" : this.state.item.address
         };
 
         AuthService.createCustomer(data).then(

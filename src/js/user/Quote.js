@@ -254,14 +254,14 @@ class UserQuote extends Component {
                             return (
                                 <div className="row pb-2" key={item.id}>
                                     <div className="col">
-                                        <input type="text" className="form-control"
+                                        <input type="text" className="form-control" 
                                             defaultValue={item.name}
                                             onChange={this.handleMeasureChange.bind(this, item.id, 'name')}
                                         />
                                     </div>
                                     <div className="col">
 
-                                        <input type="text" className="form-control"
+                                        <input type="text" className="form-control" autoComplete={'' + Math.random()}
                                             defaultValue={item.unit}
                                             onChange={this.handleMeasureChange.bind(this, item.id, 'unit')}
                                         />
@@ -269,7 +269,7 @@ class UserQuote extends Component {
                                     <div className="col">
 
                                         <input type="number" className="form-control"
-                                            defaultValue={item.qty}
+                                            defaultValue={item.qty} min="1" 
                                             onChange={this.handleMeasureChange.bind(this, item.id, 'qty')}
                                         />
                                     </div>

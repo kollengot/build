@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import InfiniteScroll from 'react-infinite-scroller';
 
 import Popup from "../components/Popup";
 import { validationMessages } from '../common/Constants';
@@ -13,19 +14,26 @@ class ManageInventory extends Component {
         selectedItem: [],
         editInventoryPage: false,
         popupConfig: {},
-        isPopupOpen: false
+        isPopupOpen: false,
+        hasMoreItems: true,
+        pageNo: 0
     }
-    constructor(props) {
-        super(props);
-        this.getAllInventoryList();
-    }
+    
     getAllInventoryList() {
-        AdminService.getAllInventory().then(
+
+        AdminService.getAllInventory(this.state.pageNo).then(
             response => {
                 if(response){
+                    var tmpListitems = [...this.state.listitems, ...response.data.rows];
                     this.setState({
-                        listitems: response.data.rows
+                        listitems: tmpListitems,
+                        pageNo: this.state.pageNo+1
                     });
+                    if(this.state.pageNo >= response.data.currentPage) {
+                        this.setState({
+                            hasMoreItems: false
+                        });
+                    }
                 }
             },
             error => {
@@ -180,7 +188,16 @@ class ManageInventory extends Component {
                         <label>Modified On</label>
                     </div>
                 </div>
-                <div className="quote-req-table">
+                <div className="quote-req-table" style={{maxHeight: (window.innerHeight - 200) + 'px'}}>
+
+                <InfiniteScroll
+                pageStart={0}
+                loadMore={this.getAllInventoryList.bind(this)}
+                hasMore={this.state.hasMoreItems}
+                loader={<div className="loader" key={0}>Loading ...</div>}
+                useWindow={false} >
+
+
                 {this.state.listitems && this.state.listitems.filter(item =>
                         item.itemName.toLowerCase().includes(this.state.searchValue)).map(listitem => (
                     
@@ -228,6 +245,14 @@ class ManageInventory extends Component {
                             </div>
                         </div>
                     ))}
+
+
+
+
+
+                    </InfiniteScroll>
+
+
                 </div>
             </div>
         </div>);

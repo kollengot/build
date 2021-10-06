@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { Table } from 'reactstrap';
 import Tabs from 'react-bootstrap/Tabs';
 import Tab from 'react-bootstrap/Tab';
-import Checkbox from "../components/Checkbox";
+import InfiniteScroll from 'react-infinite-scroller';
 import TableRow from "../components/TableRow";
 import TableHeader from "../components/TableHeader";
 import AdminService from "../services/admin.service";
@@ -25,9 +25,14 @@ class ConfigureOperation extends Component {
             totalCost: 0,
             tabActiveKey: "tools",
             workerSearchValue: "",
-            toolSearchValue: ""
+            toolSearchValue: "",
+            hasMoreTools: true,
+            toolPageNo: 0,
+            hasMoreWorkers: true,
+            workerPageNo: 0
         }    
-        this.getData();
+       // this.getData();
+       this.getAllTools();
     }
 
     getData() {
@@ -40,11 +45,20 @@ class ConfigureOperation extends Component {
     }
 
     getAllTools() {
-        AdminService.getAllInventory().then(
+        debugger;
+        AdminService.getAllInventory(this.state.toolPageNo).then(
             response => {
+                var tmpListitems = [...this.state.toolList, ...response.data.rows];
                 this.setState({
-                    toolList: response.data.rows
+                    toolList: tmpListitems,
+                    toolPageNo: this.state.toolPageNo+1
                 });
+
+                if(this.state.toolPageNo >= response.data.currentPage) {
+                    this.setState({
+                        hasMoreTools: false
+                    });
+                }
             },
             error => {
                 console.log("Error");
@@ -53,12 +67,21 @@ class ConfigureOperation extends Component {
     }
 
     getAllWorkers() {
-        AdminService.getAllWorkers().then(
+        AdminService.getAllWorkers(this.state.workerPageNo).then(
             response => {
+                var tmpListitems = [...this.state.workerList, ...response.data.rows];
                 this.setState({
-                    workerList: response.data.rows
+                    workerList: tmpListitems,
+                    workerPageNo: this.state.workerPageNo+1
                 });
+
+                if(this.state.workerPageNo >= response.data.currentPage) {
+                    this.setState({
+                        hasMoreWorkers: false
+                    });
+                }
             },
+
             error => {
                 console.log("Error");
             }
@@ -191,7 +214,7 @@ class ConfigureOperation extends Component {
     createTableHeader = (type) => {
         var tableHeader = [];
         if (type === "tool") {
-            tableHeader = ["inputCheckbox", "Tool Name", "Available Quantity", "Required Quantity", "Cost"];
+            tableHeader = ["inputCheckbox", "Tool Name", "Available Quantity", "Cost", "Required Quantity"];
             return (
                 <TableHeader
                     headerObj={tableHeader}
@@ -256,10 +279,25 @@ class ConfigureOperation extends Component {
                         <input type="text" className="form-control search-box" placeholder="Search Tools..." onChange={this.handleToolSearchChange.bind(this)} />
                     </div>
 
-                    <Table responsive="sm">
+
+                    <Table responsive="sm" className="conf-table">
                         <tbody>
+
+
+                        <InfiniteScroll
+                pageStart={0}
+                loadMore={this.getAllTools.bind(this)}
+                hasMore={this.state.hasMoreTools}
+                loader={<div className="loader" key={0}>Loading ...</div>}
+                useWindow={false}
+            >
+
                             {this.createTableHeader("tool")}
                             {this.createToolList()}
+
+
+                </InfiniteScroll>
+
                         </tbody>
                     </Table>
                     </div>
@@ -277,10 +315,25 @@ class ConfigureOperation extends Component {
                         <span className="fa fa-search form-control-feedback"></span>
                         <input type="text" className="form-control search-box" placeholder="Search Workers..." onChange={this.handleWorkerSearchChange.bind(this)} />
                     </div>
-                    <Table responsive="sm">
+                    <Table responsive="sm" className="conf-table">
                         <tbody>
+
+                        <InfiniteScroll
+                pageStart={0}
+                loadMore={this.getAllWorkers.bind(this)}
+                hasMore={this.state.hasMoreWorkers}
+                loader={<div className="loader" key={0}>Loading ...</div>}
+                useWindow={false}
+            >
+
+
                             {this.createTableHeader("worker")}
                             {this.createWorkerList()}
+
+
+                            </InfiniteScroll>
+
+
                         </tbody>
                     </Table>
 

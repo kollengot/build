@@ -34,6 +34,16 @@ class Popup extends React.Component {
         return this.props.popupConfig.body;
     }
   };
+  getClassName() {
+    switch(this.props.popupConfig.type) {
+      case 'configureOperation':
+        return 'confCntr';
+      case 'image':
+        return 'imgCntr';
+      default:
+        return '';
+    }
+  };
 
   render() {
     const popupConfigType = this.props.popupConfig.type;
@@ -42,11 +52,11 @@ class Popup extends React.Component {
       button = <Button color="success" onClick={this.props.parentConfirmCallback}>Confirm Delete</Button>;
     } 
     return (
-      <Modal show={this.props.openFlag} onHide={this.props.parentCloseCallback} className={" " + (this.props.popupConfig.type == 'image' ? "imgCntr":"")}>
+      <Modal show={this.props.openFlag} onHide={this.props.parentCloseCallback}  className={this.getClassName()}>
         <Modal.Header closeButton>
           <Modal.Title>{this.props.popupConfig.header}</Modal.Title>
         </Modal.Header>
-        <Modal.Body>
+        <Modal.Body >
         { this.renderPopupBody() }
         </Modal.Body>
         <Modal.Footer>

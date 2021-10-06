@@ -25,7 +25,8 @@ class QuoteReqUpdate extends Component {
     isPopupOpen: false,
     selectedOperationId: 0,
     configOpId: 0,
-    totalCost: 0
+    totalCost: 0,
+    taxCheckboxChecked: false
   }
   constructor(props) {
     super(props);
@@ -250,6 +251,10 @@ class QuoteReqUpdate extends Component {
     console.log(e);
   }
 
+  onDeleteRowClick = event => {
+    console.log(event.target.name);
+  }
+
 
 
 
@@ -397,6 +402,8 @@ else {
               type="tool"
               listItem={tool.Inventories}
               reqQty={tool.req_quantity}
+              deleteBtn = {true}
+              onDeleteRowClick = {this.onDeleteRowClick}
             />);
           })
           }
@@ -419,6 +426,8 @@ else {
               type="worker"
               listItem={item.Workers}
               reqQty={item.total_hrs_req}
+              deleteBtn = {true}
+              onDeleteRowClick = {this.onDeleteRowClick}
             />);
           })
           }
@@ -429,11 +438,19 @@ else {
   }
   getCost() {
     if (this.state.selectedItem.QuoteOperation) {
-      return (this.state.selectedItem.QuoteOperation.reduce((a, v) => a = a + v.operation_cost, 0));
+      var totalCost = (this.state.selectedItem.QuoteOperation.reduce((a, v) => a = a + v.operation_cost, 0));
+      if(this.state.taxCheckboxChecked) {
+        totalCost = totalCost + totalCost* (5/100);
+      }
+      return totalCost;
     } else {
       return (0);
     }
 
+  };
+
+  handleTaxChange(evt) {
+    this.setState({ taxCheckboxChecked: evt.target.checked });
   };
 
   renderMeasureTable() {
@@ -608,7 +625,7 @@ else {
 
                 (<div className="col quote-measurements">
                   <div className="row">
-                    <div className="col">
+                    <div className="col-2">
                       <span className="underline blue">Make a Quote</span>
                     </div>
                     <div className="col text-right">
@@ -628,8 +645,9 @@ else {
                           <option key={item.id} value={item.id}>{item.name}</option>
                         ))}
                       </select>
-
-                      <span className="blue">Total Cost</span>
+                      
+                      Apply Tax <input type="checkbox" onChange={this.handleTaxChange.bind(this)}></input> 
+                      <span className="blue ml-4">Total Cost</span>
                       <span className="badge btn-blue p-2 ml-2">{this.getCost()}</span>
                     </div>
                   </div>

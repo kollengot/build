@@ -19,7 +19,6 @@ class UserService {
             });
     }
 
-
     getSingleQuote(quoteId) {
         var config = {
             method: 'get',
@@ -91,6 +90,37 @@ class UserService {
         return axios(config)
             .then(function (response) {
                 console.log(response);
+                return response;
+            })
+            .catch(function (error) {
+                console.log(error);
+            });
+    }
+
+    getSingleCustomer() {
+        var config = {
+            method: 'get',
+            url: API_URL + 'user'
+        };
+
+        return axios(config)
+            .then(function (response) {
+                return response;
+            })
+            .catch(function (error) {
+                console.log(error);
+            });
+    }
+
+    updateUserProfile(data) {
+        var config = {
+            method: 'put',
+            url: API_URL + 'user',
+            data: data
+        };
+
+        return axios(config)
+            .then(function (response) {
                 return response;
             })
             .catch(function (error) {

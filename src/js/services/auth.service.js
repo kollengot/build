@@ -57,6 +57,21 @@ class AuthService {
             password
         });
     }
+    forgotPassword(data) {
+        var config = {
+            method: 'post',
+            url: API_URL + "forgotPassword",
+            data: data
+        };
+
+        return axios(config)
+            .then(function (response) {
+                return response;
+            })
+            .catch(function (error) {
+                console.log(error);
+            });
+    }
     createCustomer(data) {
         var config = {
             method: 'put',
